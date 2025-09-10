@@ -1353,7 +1353,7 @@
                         const nis = e.target.dataset.nis;
                         const status = e.target.value;
                         const siswa = dataSiswa.find(s => s.nis === nis);
-                        if(siswa) {
+                        if(siswa && siswa.status !== status) {
                            const success = await postData({ action: 'updateSiswaStatus', nis, status });
                            if(success) {
                                 siswa.status = status;
@@ -1370,7 +1370,7 @@
                         const id = e.target.dataset.id;
                         const status = e.target.value;
                         const guru = dataGuru.find(g => g.id == id);
-                        if(guru) {
+                        if(guru && guru.status !== status) {
                            const success = await postData({ action: 'updateGuruStatus', id, status });
                            if (success) {
                                 guru.status = status;
