@@ -67,50 +67,6 @@
         input[type="file"]::file-selector-button:hover {
             background-color: #1d4ed8;
         }
-        /* Card style */
-        .card {
-            @apply bg-white p-6 rounded-xl shadow-md;
-        }
-        /* Button styles */
-        .btn {
-            @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
-        }
-        .btn-primary {
-            @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
-        }
-        .btn-secondary {
-            @apply text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-gray-400;
-        }
-        .btn-success {
-            @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
-        }
-        .btn-danger {
-            @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
-        }
-        /* Modal styles */
-        .modal-overlay {
-             @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300;
-        }
-        .modal-content {
-            @apply bg-white rounded-lg p-6 w-full max-w-sm mx-auto shadow-xl transform transition-all duration-300;
-        }
-        /* Radio button group style for attendance */
-        .status-radio-group {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .status-radio-group label {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .status-radio-group input {
-            @apply form-radio h-4 w-4 text-blue-600;
-        }
-        .status-radio-group span {
-            @apply ml-2 text-sm;
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -154,7 +110,7 @@
                         </select>
                     </div>
                 </div>
-                <button id="login-btn" class="w-full btn btn-success mt-6 font-bold">Login</button>
+                <button id="login-btn" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300 mt-6 font-bold">Login</button>
             </div>
         </div>
     </div>
@@ -270,7 +226,7 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Selamat Datang!</h1>
                 <p class="text-base text-gray-600 mb-8">Sistem Informasi Absensi Siswa SMP Diponegoro Sampang.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-blue-100 rounded-full">
                                 <i data-lucide="users" class="w-6 h-6 text-blue-600"></i>
@@ -281,7 +237,7 @@
                             </div>
                         </div>
                     </div>
-                     <div class="card">
+                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-green-100 rounded-full">
                                 <i data-lucide="user-check" class="w-6 h-6 text-green-600"></i>
@@ -292,7 +248,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-yellow-100 rounded-full">
                                 <i data-lucide="user-minus" class="w-6 h-6 text-yellow-600"></i>
@@ -303,7 +259,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-red-100 rounded-full">
                                 <i data-lucide="user-x" class="w-6 h-6 text-red-600"></i>
@@ -330,11 +286,11 @@
                  <div class="mt-12">
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Siswa</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
                             <div id="overall-daily-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
                             <div id="overall-monthly-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
@@ -343,14 +299,14 @@
                 <div id="grafik-guru-container" class="mt-12">
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Guru</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
                              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                                 <div id="overall-daily-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
                                 <div id="overall-daily-teacher-table"></div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
                              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                                 <div id="overall-monthly-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
@@ -381,7 +337,7 @@
                         <input type="file" id="guru-file-input" class="hidden" accept=".xlsx, .xls">
                     </div>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -426,7 +382,7 @@
                         <input type="file" id="siswa-file-input" class="hidden" accept=".xlsx, .xls">
                     </div>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -454,7 +410,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Absensi Siswa</h1>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="flex items-center justify-end mb-4">
                         <label for="filter-kelas" class="text-sm font-medium mr-2">Filter Kelas:</label>
                         <select id="filter-kelas" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -486,7 +442,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Absensi Guru</h1>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -533,7 +489,7 @@
 
                 <!-- Daily Student Report Content -->
                 <div id="laporan-harian-siswa-content">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                              <h2 class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Siswa Hari Ini</h2>
                              <div class="flex items-center">
@@ -563,7 +519,7 @@
 
                 <!-- Daily Guru Report Content -->
                 <div id="laporan-harian-guru-content" class="hidden">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                          <h2 class="text-xl font-semibold mb-4 text-gray-800">Rekapitulasi Ketidakhadiran Guru Hari Ini</h2>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
@@ -585,7 +541,7 @@
 
                 <!-- Siswa Monthly Report Content -->
                 <div id="laporan-bulanan-siswa-content" class="hidden">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex justify-between items-center">
                             <h2 class="text-xl font-semibold text-gray-800">Laporan Bulanan Siswa</h2>
                             <button id="download-siswa-pdf" class="btn btn-primary flex items-center space-x-2">
@@ -599,7 +555,7 @@
                 
                 <!-- Guru Monthly Report Content -->
                 <div id="laporan-bulanan-guru-content" class="hidden">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex justify-between items-center">
                             <h2 class="text-xl font-semibold text-gray-800">Laporan Bulanan Guru</h2>
                             <button id="download-guru-pdf" class="btn btn-primary flex items-center space-x-2">
@@ -615,7 +571,7 @@
             <!-- Tambah/Edit Guru Page -->
             <div id="tambah-guru-page" class="page hidden">
                 <h1 id="tambah-guru-page-title" class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tambah Guru Baru</h1>
-                <div class="card max-w-2xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
                     <form id="guru-form">
                         <input type="hidden" id="guru-id">
                         <div class="space-y-4">
@@ -639,7 +595,7 @@
             <!-- Tambah/Edit Siswa Page -->
             <div id="tambah-siswa-page" class="page hidden">
                  <h1 id="tambah-siswa-page-title" class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tambah Siswa Baru</h1>
-                 <div class="card max-w-2xl mx-auto">
+                 <div class="bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
                     <form id="siswa-form">
                         <input type="hidden" id="siswa-nis-edit">
                         <div class="space-y-4">
@@ -671,8 +627,8 @@
     </div>
     
     <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="modal-overlay hidden opacity-0">
-        <div class="modal-content scale-95 text-center">
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 hidden opacity-0">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm mx-auto shadow-xl transform transition-all duration-300 scale-95 text-center">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
                 <i data-lucide="alert-triangle" class="h-6 w-6 text-red-600"></i>
             </div>
@@ -814,8 +770,6 @@
                     }
                 }
                 
-                checkAndResetDailyAttendance();
-                checkHoliday();
                 loadSavedImages();
                 refreshUI();
                 setupEventListeners();
@@ -939,13 +893,13 @@
                 modal.classList.remove('hidden');
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
-                    modal.querySelector('.modal-content').classList.remove('scale-95');
+                    modal.querySelector('div').classList.remove('scale-95');
                 }, 10);
             }
 
             function hideModal(modal) {
                 modal.classList.add('opacity-0');
-                modal.querySelector('.modal-content').classList.add('scale-95');
+                modal.querySelector('div').classList.add('scale-95');
                 setTimeout(() => {
                     modal.classList.add('hidden');
                 }, 300);
@@ -1001,13 +955,11 @@
                     profileRole.textContent = guru.jabatan;
                     
                     updatePlaceholders(guru); // Set initials for profile
-                    
+                    loadSavedImages(); // Check for saved profile image after setting initials
+
                     const savedProfileImage = localStorage.getItem('profileImage');
-                    if(savedProfileImage){
-                        document.getElementById('profile-img').src = savedProfileImage;
-                        document.getElementById('profile-img').classList.remove('hidden');
-                        document.getElementById('profile-placeholder').classList.add('hidden');
-                    }
+                    document.getElementById('profile-img').classList.toggle('hidden', !savedProfileImage);
+                    document.getElementById('profile-placeholder').classList.toggle('hidden', !!savedProfileImage);
 
                     updateUIForRole();
                     updateAdminUI();
@@ -1184,9 +1136,9 @@
                     const radioGroupName = `status-${siswa.nis}`;
                     const statuses = ['Hadir', 'Sakit', 'Izin', 'Alpha'];
                     const radioButtons = statuses.map(status => `
-                        <label>
-                            <input type="radio" name="${radioGroupName}" value="${status}" data-nis="${siswa.nis}" class="attendance-radio" ${siswa.status === status ? 'checked' : ''}>
-                            <span>${status}</span>
+                        <label class="inline-flex items-center mr-4">
+                            <input type="radio" name="${radioGroupName}" value="${status}" data-nis="${siswa.nis}" class="attendance-radio form-radio h-4 w-4 text-blue-600" ${siswa.status === status ? 'checked' : ''}>
+                            <span class="ml-2 text-sm">${status}</span>
                         </label>
                     `).join('');
 
@@ -1199,7 +1151,7 @@
                             <td class="p-3 font-medium text-gray-800">${siswa.nama}</td>
                             <td class="p-3 text-gray-600">${siswa.kelas}</td>
                             <td class="p-3">
-                                <div class="status-radio-group">
+                                <div class="flex items-center">
                                     ${radioButtons}
                                 </div>
                             </td>
@@ -1219,9 +1171,9 @@
                     const radioGroupName = `status-guru-${guru.id}`;
                     const statuses = ['Hadir', 'Sakit', 'Izin', 'Alpha'];
                     const radioButtons = statuses.map(status => `
-                        <label>
-                            <input type="radio" name="${radioGroupName}" value="${status}" data-id="${guru.id}" class="attendance-radio-guru" ${guru.status === status ? 'checked' : ''}>
-                            <span>${status}</span>
+                        <label class="inline-flex items-center mr-4">
+                            <input type="radio" name="${radioGroupName}" value="${status}" data-id="${guru.id}" class="attendance-radio-guru form-radio h-4 w-4 text-blue-600" ${guru.status === status ? 'checked' : ''}>
+                            <span class="ml-2 text-sm">${status}</span>
                         </label>
                     `).join('');
 
@@ -1233,7 +1185,7 @@
                             <td class="p-3 font-medium text-gray-800">${guru.nama}</td>
                             <td class="p-3 text-gray-600">${guru.jabatan}</td>
                             <td class="p-3">
-                                <div class="status-radio-group">
+                                <div class="flex items-center">
                                     ${radioButtons}
                                 </div>
                             </td>
@@ -1393,7 +1345,7 @@
                         const status = e.target.value;
                         const siswa = dataSiswa.find(s => s.nis === nis);
                         if(siswa && siswa.status !== status) {
-                           const success = await postData({ action: 'updateSiswaStatus', nis, status, date: new Date().toISOString() });
+                           const success = await postData({ action: 'updateSiswaStatus', nis, status });
                            if(success) {
                                 siswa.status = status;
                                 if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
@@ -1410,7 +1362,7 @@
                         const status = e.target.value;
                         const guru = dataGuru.find(g => g.id == id);
                         if(guru && guru.status !== status) {
-                           const success = await postData({ action: 'updateGuruStatus', id, status, date: new Date().toISOString() });
+                           const success = await postData({ action: 'updateGuruStatus', id, status });
                            if (success) {
                                 guru.status = status;
                                 if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
@@ -1798,7 +1750,7 @@
                     const tableId = `table-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
 
                     container.innerHTML += `
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <div class="flex justify-between items-center mb-2">
                                 <h3 class="text-lg font-semibold text-gray-800">Kelas ${kelas}</h3>
                                 <p class="text-sm text-gray-500 font-medium">${totalSiswaDiKelas} Siswa</p>
@@ -1880,7 +1832,7 @@
                     const tableId = `table-monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
 
                     container.innerHTML += `
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <div class="flex justify-between items-center mb-2">
                                 <h3 class="text-lg font-semibold text-gray-800">Kelas ${kelas}</h3>
                                 <p class="text-sm text-gray-500 font-medium">${totalSiswaDiKelas} Siswa</p>
@@ -2223,49 +2175,6 @@
                 return nationalHolidays.some(holiday => holiday.month === month && holiday.day === day);
             }
 
-            async function checkAndResetDailyAttendance() {
-                const today = new Date().toLocaleDateString('id-ID');
-                const lastVisit = localStorage.getItem('lastVisitDate');
-
-                if (today !== lastVisit) {
-                    showLoading('Mereset status absensi harian...');
-                    // Reset status lokal
-                    dataSiswa.forEach(s => s.status = 'Hadir');
-                    dataGuru.forEach(g => g.status = 'Hadir');
-
-                    // Kirim perintah reset ke Google Apps Script
-                    const success = await postData({ action: 'resetDailyStatus', date: new Date().toISOString() });
-                    if(success) {
-                        console.log("Status absensi harian berhasil direset di server.");
-                        localStorage.setItem('lastVisitDate', today);
-                    } else {
-                        alert("Gagal mereset status absensi harian di server. Silakan coba lagi.");
-                    }
-                    hideLoading();
-                }
-            }
-            
-            function checkHoliday() {
-                const now = new Date();
-                if (isHoliday(now.getFullYear(), now.getMonth() + 1, now.getDate())) {
-                    const holidayMessage = `
-                        <div class="card text-center p-8">
-                            <i data-lucide="calendar-off" class="w-12 h-12 mx-auto text-blue-500 mb-4"></i>
-                            <h2 class="text-xl font-bold text-gray-800">Hari Libur</h2>
-                            <p class="text-gray-600 mt-2">Absensi tidak dapat diakses pada hari Sabtu, Minggu, atau hari libur nasional.</p>
-                        </div>`;
-                    
-                    const absensiPage = document.getElementById('absensi-page');
-                    const absensiGuruPage = document.getElementById('absensi-guru-page');
-                    
-                    if(absensiPage) absensiPage.innerHTML = holidayMessage;
-                    if(absensiGuruPage) absensiGuruPage.innerHTML = holidayMessage;
-
-                    lucide.createIcons();
-                }
-            }
-
-
             function downloadMonthlyPDF(type) {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({
@@ -2461,208 +2370,5 @@
             init();
         });
     </script>
-    
-    <!-- =============================================================================== -->
-    <!-- PERHATIAN: KODE GOOGLE APPS SCRIPT DI BAWAH INI HARUS DI-COPY KE PROYEK ANDA    -->
-    <!-- =============================================================================== -->
-    <!-- 
-    KESALAHAN YANG ANDA ALAMI DISEBABKAN KODE 'Code.gs' ANDA BELUM DIPERBARUI.
-    
-    LANGKAH-LANGKAH PERBAIKAN (WAJIB DIIKUTI):
-    1. Buka proyek Google Apps Script Anda.
-    2. Buka file bernama `Code.gs`.
-    3. Hapus SEMUA kode yang ada di dalam `Code.gs`.
-    4. Salin (Copy) SELURUH kode yang ada di dalam blok ini (mulai dari `function doPost(e)` 
-       sampai akhir) dan tempel (Paste) ke dalam file `Code.gs` yang sudah kosong tadi.
-    5. Simpan proyek (`Ctrl + S` atau ikon disket).
-    6. Lakukan deployment ulang: Klik "Deploy" > "New deployment". Pilih "Web app" dan pastikan 
-       akses diatur ke "Anyone". Salin URL baru jika diberikan.
-
-    --------------------------------- MULAI SALIN DARI SINI ---------------------------------
-    ```javascript
-    function doPost(e) {
-      var data = JSON.parse(e.postData.contents);
-      var action = data.action;
-      var response = {};
-      
-      try {
-        switch(action) {
-          case 'resetDailyStatus':
-            handleAttendanceUpdate(data, true);
-            break;
-          case 'updateSiswaStatus':
-          case 'updateGuruStatus':
-            handleAttendanceUpdate(data, false);
-            break;
-          // Anda bisa menambahkan case lain untuk action yang sudah ada di sini
-          // Contoh:
-          // case 'addSiswa':
-          //   // kode untuk tambah siswa
-          //   break;
-          default:
-            // Jika Anda memiliki fungsi lama untuk menangani aksi lain, panggil di sini
-            // atau tambahkan case di atas. Jika tidak, ini akan menangkap aksi yang tidak dikenal.
-             throw new Error("Aksi tidak diketahui: " + action);
-        }
-        
-        response.status = 'success';
-        response.message = 'Action ' + action + ' processed successfully.';
-
-      } catch (error) {
-        response.status = 'error';
-        response.message = error.toString();
-        Logger.log(error.toString());
-      }
-      
-      return ContentService.createTextOutput(JSON.stringify(response))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    function handleAttendanceUpdate(data, isReset) {
-      var date = new Date(data.date);
-      var monthName = date.toLocaleString('id-ID', { month: 'long', timeZone: 'Asia/Jakarta' });
-      var year = date.getFullYear();
-      var day = date.getDate();
-
-      if (isReset) {
-        // Reset untuk siswa dan guru sekaligus
-        var siswaSheetName = `RekapSiswa-${monthName}-${year}`;
-        var guruSheetName = `RekapGuru-${monthName}-${year}`;
-        
-        var siswaSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(siswaSheetName) || createNewMonthSheet(siswaSheetName, 'RekapSiswa');
-        var guruSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(guruSheetName) || createNewMonthSheet(guruSheetName, 'RekapGuru');
-        
-        resetColumnToHadir(siswaSheet, day);
-        resetColumnToHadir(guruSheet, day);
-      } else {
-        var isSiswa = data.action === 'updateSiswaStatus';
-        var sheetNamePrefix = isSiswa ? 'RekapSiswa' : 'RekapGuru';
-        var sheetName = `${sheetNamePrefix}-${monthName}-${year}`;
-        
-        var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName) || createNewMonthSheet(sheetName, sheetNamePrefix);
-        
-        var id = isSiswa ? data.nis : data.id;
-        var status = data.status.charAt(0).toUpperCase(); // 'H', 'S', 'I', 'A'
-        updateCell(sheet, id, day, status);
-      }
-    }
-
-    function createNewMonthSheet(sheetName, type) {
-      var ss = SpreadsheetApp.getActiveSpreadsheet();
-      var templateSheet = (type === 'RekapSiswa') ? ss.getSheetByName('DataSiswa') : ss.getSheetByName('DataGuru');
-      if (!templateSheet) throw new Error("Sheet template '" + type.replace('Rekap', 'Data') + "' tidak ditemukan.");
-
-      var newSheet = ss.insertSheet(sheetName);
-      
-      var headers = (type === 'RekapSiswa') ? ["NIS", "NISN", "Nama Siswa", "Kelas"] : ["ID", "Nama Guru", "Jabatan"];
-      
-      for (var i = 1; i <= 31; i++) headers.push(i);
-      headers.push("Jml Hadir", "Jml Sakit", "Jml Izin", "Jml Alpha");
-      newSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-      
-      var dataRange = templateSheet.getDataRange();
-      var data = dataRange.getValues();
-      data.shift(); 
-      
-      if(data.length > 0) {
-        data.forEach(function(row, index) {
-          var targetRow = index + 2;
-          var idData = (type === 'RekapSiswa') ? [row[0], row[1], row[2], row[3]] : [row[0], row[1], row[2]];
-          newSheet.getRange(targetRow, 1, 1, idData.length).setValues([idData]);
-
-          var dateRange = `E${targetRow}:${newSheet.getRange(targetRow, 35).getA1Notation()}`;
-          newSheet.getRange(targetRow, 36).setFormula(`=COUNTIF(${dateRange}, "H")`);
-          newSheet.getRange(targetRow, 37).setFormula(`=COUNTIF(${dateRange}, "S")`);
-          newSheet.getRange(targetRow, 38).setFormula(`=COUNTIF(${dateRange}, "I")`);
-          newSheet.getRange(targetRow, 39).setFormula(`=COUNTIF(${dateRange}, "A")`);
-        });
-      }
-
-      markHolidaysInSheet(newSheet);
-      return newSheet;
-    }
-
-    function updateCell(sheet, id, day, status) {
-      var data = sheet.getDataRange().getValues();
-      var idColumn = 0;
-      var dateColumnOffset = (sheet.getName().includes('RekapSiswa')) ? 4 : 3;
-      var dateColumn = day + dateColumnOffset;
-
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][idColumn]) == String(id)) {
-          sheet.getRange(i + 1, dateColumn).setValue(status);
-          return;
-        }
-      }
-    }
-
-    function resetColumnToHadir(sheet, day) {
-      if (isTodayHoliday()) return; // Jangan reset jika hari ini libur
-      var dateColumnOffset = (sheet.getName().includes('RekapSiswa')) ? 4 : 3;
-      var dateColumn = day + dateColumnOffset;
-      var lastRow = sheet.getLastRow();
-      if(lastRow > 1) {
-        var rangeToReset = sheet.getRange(2, dateColumn, lastRow - 1, 1);
-        var currentValues = rangeToReset.getValues();
-        var newValues = currentValues.map(function(row) {
-          return (row[0] === '-') ? ['-'] : ['H'];
-        });
-        rangeToReset.setValues(newValues);
-      }
-    }
-
-    function isTodayHoliday() {
-      var today = new Date();
-      var dayOfWeek = today.getDay();
-      return (dayOfWeek === 0 || dayOfWeek === 6);
-    }
-
-    function markHolidaysInSheet(sheet) {
-      var sheetNameParts = sheet.getName().split('-');
-      var year = parseInt(sheetNameParts[2], 10);
-      var monthString = sheetNameParts[1];
-      var months = { "Januari":0, "Februari":1, "Maret":2, "April":3, "Mei":4, "Juni":5, "Juli":6, "Agustus":7, "September":8, "Oktober":9, "November":10, "Desember":11 };
-      var month = months[monthString];
-
-      var dateColumnOffset = (sheet.getName().includes('RekapSiswa')) ? 4 : 3;
-      var lastRow = sheet.getLastRow();
-      if (lastRow < 2) return;
-
-      for(var day = 1; day <= 31; day++) {
-        var date;
-        try {
-          date = new Date(year, month, day);
-          if (date.getMonth() !== month) continue;
-        } catch (e) { continue; }
-        
-        var dayOfWeek = date.getDay();
-        if(dayOfWeek === 0 || dayOfWeek === 6) { 
-          sheet.getRange(2, day + dateColumnOffset, lastRow - 1, 1).setValue('-').setBackground('#d9d9d9');
-        }
-      }
-    }
-
-    // Fungsi trigger ini opsional, tapi sangat direkomendasikan
-    // Atur untuk berjalan setiap hari antara tengah malam - 1 pagi
-    function resetDailyTrigger() {
-      var date = new Date();
-      if (isTodayHoliday()) return;
-
-      var monthName = date.toLocaleString('id-ID', { month: 'long', timeZone: 'Asia/Jakarta' });
-      var year = date.getFullYear();
-      var day = date.getDate();
-
-      var siswaSheetName = `RekapSiswa-${monthName}-${year}`;
-      var guruSheetName = `RekapGuru-${monthName}-${year}`;
-
-      var siswaSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(siswaSheetName);
-      var guruSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(guruSheetName);
-
-      if (siswaSheet) resetColumnToHadir(siswaSheet, day);
-      if (guruSheet) resetColumnToHadir(guruSheet, day);
-    }
-    ```
-    ---------------------------------- BERHENTI MENYALIN DI SINI ----------------------------------
-    -->
 </body>
 </html>
