@@ -67,6 +67,50 @@
         input[type="file"]::file-selector-button:hover {
             background-color: #1d4ed8;
         }
+        /* Card style */
+        .card {
+            @apply bg-white p-6 rounded-xl shadow-md;
+        }
+        /* Button styles */
+        .btn {
+            @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+        }
+        .btn-primary {
+            @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
+        }
+        .btn-secondary {
+            @apply text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-gray-400;
+        }
+        .btn-success {
+            @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
+        }
+        .btn-danger {
+            @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+        }
+        /* Modal styles */
+        .modal-overlay {
+             @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300;
+        }
+        .modal-content {
+            @apply bg-white rounded-lg p-6 w-full max-w-sm mx-auto shadow-xl transform transition-all duration-300;
+        }
+        /* Radio button group style for attendance */
+        .status-radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .status-radio-group label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .status-radio-group input {
+            @apply form-radio h-4 w-4 text-blue-600;
+        }
+        .status-radio-group span {
+            @apply ml-2 text-sm;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -770,6 +814,8 @@
                     }
                 }
                 
+                checkAndResetDailyAttendance();
+                checkHoliday();
                 loadSavedImages();
                 refreshUI();
                 setupEventListeners();
@@ -955,11 +1001,13 @@
                     profileRole.textContent = guru.jabatan;
                     
                     updatePlaceholders(guru); // Set initials for profile
-                    loadSavedImages(); // Check for saved profile image after setting initials
-
+                    
                     const savedProfileImage = localStorage.getItem('profileImage');
-                    document.getElementById('profile-img').classList.toggle('hidden', !savedProfileImage);
-                    document.getElementById('profile-placeholder').classList.toggle('hidden', !!savedProfileImage);
+                    if(savedProfileImage){
+                        document.getElementById('profile-img').src = savedProfileImage;
+                        document.getElementById('profile-img').classList.remove('hidden');
+                        document.getElementById('profile-placeholder').classList.add('hidden');
+                    }
 
                     updateUIForRole();
                     updateAdminUI();
@@ -1345,7 +1393,7 @@
                         const status = e.target.value;
                         const siswa = dataSiswa.find(s => s.nis === nis);
                         if(siswa && siswa.status !== status) {
-                           const success = await postData({ action: 'updateSiswaStatus', nis, status });
+                           const success = await postData({ action: 'updateSiswaStatus', nis, status, date: new Date().toISOString() });
                            if(success) {
                                 siswa.status = status;
                                 if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
@@ -1362,7 +1410,7 @@
                         const status = e.target.value;
                         const guru = dataGuru.find(g => g.id == id);
                         if(guru && guru.status !== status) {
-                           const success = await postData({ action: 'updateGuruStatus', id, status });
+                           const success = await postData({ action: 'updateGuruStatus', id, status, date: new Date().toISOString() });
                            if (success) {
                                 guru.status = status;
                                 if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
@@ -1626,10 +1674,10 @@
                 
                 // Excel Upload Listeners
                 document.getElementById('upload-guru-excel').addEventListener('click', () => document.getElementById('guru-file-input').click());
-                document.getElementById('upload-guru-excel').addEventListener('change', (e) => handleFileUpload(e, 'guru'));
+                document.getElementById('guru-file-input').addEventListener('change', (e) => handleFileUpload(e, 'guru'));
                 
                 document.getElementById('upload-siswa-excel').addEventListener('click', () => document.getElementById('siswa-file-input').click());
-                document.getElementById('upload-siswa-excel').addEventListener('change', (e) => handleFileUpload(e, 'siswa'));
+                document.getElementById('siswa-file-input').addEventListener('change', (e) => handleFileUpload(e, 'siswa'));
             }
 
             function updateSaveButtonsUI() {
@@ -2175,6 +2223,49 @@
                 return nationalHolidays.some(holiday => holiday.month === month && holiday.day === day);
             }
 
+            async function checkAndResetDailyAttendance() {
+                const today = new Date().toLocaleDateString('id-ID');
+                const lastVisit = localStorage.getItem('lastVisitDate');
+
+                if (today !== lastVisit) {
+                    showLoading('Mereset status absensi harian...');
+                    // Reset status lokal
+                    dataSiswa.forEach(s => s.status = 'Hadir');
+                    dataGuru.forEach(g => g.status = 'Hadir');
+
+                    // Kirim perintah reset ke Google Apps Script
+                    const success = await postData({ action: 'resetDailyStatus', date: new Date().toISOString() });
+                    if(success) {
+                        console.log("Status absensi harian berhasil direset di server.");
+                        localStorage.setItem('lastVisitDate', today);
+                    } else {
+                        alert("Gagal mereset status absensi harian di server. Silakan coba lagi.");
+                    }
+                    hideLoading();
+                }
+            }
+            
+            function checkHoliday() {
+                const now = new Date();
+                if (isHoliday(now.getFullYear(), now.getMonth() + 1, now.getDate())) {
+                    const holidayMessage = `
+                        <div class="card text-center p-8">
+                            <i data-lucide="calendar-off" class="w-12 h-12 mx-auto text-blue-500 mb-4"></i>
+                            <h2 class="text-xl font-bold text-gray-800">Hari Libur</h2>
+                            <p class="text-gray-600 mt-2">Absensi tidak dapat diakses pada hari Sabtu, Minggu, atau hari libur nasional.</p>
+                        </div>`;
+                    
+                    const absensiPage = document.getElementById('absensi-page');
+                    const absensiGuruPage = document.getElementById('absensi-guru-page');
+                    
+                    if(absensiPage) absensiPage.innerHTML = holidayMessage;
+                    if(absensiGuruPage) absensiGuruPage.innerHTML = holidayMessage;
+
+                    lucide.createIcons();
+                }
+            }
+
+
             function downloadMonthlyPDF(type) {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({
@@ -2370,6 +2461,208 @@
             init();
         });
     </script>
+    
+    <!-- =============================================================================== -->
+    <!-- PERHATIAN: KODE GOOGLE APPS SCRIPT DI BAWAH INI HARUS DI-COPY KE PROYEK ANDA    -->
+    <!-- =============================================================================== -->
+    <!-- 
+    KESALAHAN YANG ANDA ALAMI DISEBABKAN KODE 'Code.gs' ANDA BELUM DIPERBARUI.
+    
+    LANGKAH-LANGKAH PERBAIKAN (WAJIB DIIKUTI):
+    1. Buka proyek Google Apps Script Anda.
+    2. Buka file bernama `Code.gs`.
+    3. Hapus SEMUA kode yang ada di dalam `Code.gs`.
+    4. Salin (Copy) SELURUH kode yang ada di dalam blok ini (mulai dari `function doPost(e)` 
+       sampai akhir) dan tempel (Paste) ke dalam file `Code.gs` yang sudah kosong tadi.
+    5. Simpan proyek (`Ctrl + S` atau ikon disket).
+    6. Lakukan deployment ulang: Klik "Deploy" > "New deployment". Pilih "Web app" dan pastikan 
+       akses diatur ke "Anyone". Salin URL baru jika diberikan.
+
+    --------------------------------- MULAI SALIN DARI SINI ---------------------------------
+    ```javascript
+    function doPost(e) {
+      var data = JSON.parse(e.postData.contents);
+      var action = data.action;
+      var response = {};
+      
+      try {
+        switch(action) {
+          case 'resetDailyStatus':
+            handleAttendanceUpdate(data, true);
+            break;
+          case 'updateSiswaStatus':
+          case 'updateGuruStatus':
+            handleAttendanceUpdate(data, false);
+            break;
+          // Anda bisa menambahkan case lain untuk action yang sudah ada di sini
+          // Contoh:
+          // case 'addSiswa':
+          //   // kode untuk tambah siswa
+          //   break;
+          default:
+            // Jika Anda memiliki fungsi lama untuk menangani aksi lain, panggil di sini
+            // atau tambahkan case di atas. Jika tidak, ini akan menangkap aksi yang tidak dikenal.
+             throw new Error("Aksi tidak diketahui: " + action);
+        }
+        
+        response.status = 'success';
+        response.message = 'Action ' + action + ' processed successfully.';
+
+      } catch (error) {
+        response.status = 'error';
+        response.message = error.toString();
+        Logger.log(error.toString());
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify(response))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    function handleAttendanceUpdate(data, isReset) {
+      var date = new Date(data.date);
+      var monthName = date.toLocaleString('id-ID', { month: 'long', timeZone: 'Asia/Jakarta' });
+      var year = date.getFullYear();
+      var day = date.getDate();
+
+      if (isReset) {
+        // Reset untuk siswa dan guru sekaligus
+        var siswaSheetName = `RekapSiswa-${monthName}-${year}`;
+        var guruSheetName = `RekapGuru-${monthName}-${year}`;
+        
+        var siswaSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(siswaSheetName) || createNewMonthSheet(siswaSheetName, 'RekapSiswa');
+        var guruSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(guruSheetName) || createNewMonthSheet(guruSheetName, 'RekapGuru');
+        
+        resetColumnToHadir(siswaSheet, day);
+        resetColumnToHadir(guruSheet, day);
+      } else {
+        var isSiswa = data.action === 'updateSiswaStatus';
+        var sheetNamePrefix = isSiswa ? 'RekapSiswa' : 'RekapGuru';
+        var sheetName = `${sheetNamePrefix}-${monthName}-${year}`;
+        
+        var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName) || createNewMonthSheet(sheetName, sheetNamePrefix);
+        
+        var id = isSiswa ? data.nis : data.id;
+        var status = data.status.charAt(0).toUpperCase(); // 'H', 'S', 'I', 'A'
+        updateCell(sheet, id, day, status);
+      }
+    }
+
+    function createNewMonthSheet(sheetName, type) {
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      var templateSheet = (type === 'RekapSiswa') ? ss.getSheetByName('DataSiswa') : ss.getSheetByName('DataGuru');
+      if (!templateSheet) throw new Error("Sheet template '" + type.replace('Rekap', 'Data') + "' tidak ditemukan.");
+
+      var newSheet = ss.insertSheet(sheetName);
+      
+      var headers = (type === 'RekapSiswa') ? ["NIS", "NISN", "Nama Siswa", "Kelas"] : ["ID", "Nama Guru", "Jabatan"];
+      
+      for (var i = 1; i <= 31; i++) headers.push(i);
+      headers.push("Jml Hadir", "Jml Sakit", "Jml Izin", "Jml Alpha");
+      newSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      
+      var dataRange = templateSheet.getDataRange();
+      var data = dataRange.getValues();
+      data.shift(); 
+      
+      if(data.length > 0) {
+        data.forEach(function(row, index) {
+          var targetRow = index + 2;
+          var idData = (type === 'RekapSiswa') ? [row[0], row[1], row[2], row[3]] : [row[0], row[1], row[2]];
+          newSheet.getRange(targetRow, 1, 1, idData.length).setValues([idData]);
+
+          var dateRange = `E${targetRow}:${newSheet.getRange(targetRow, 35).getA1Notation()}`;
+          newSheet.getRange(targetRow, 36).setFormula(`=COUNTIF(${dateRange}, "H")`);
+          newSheet.getRange(targetRow, 37).setFormula(`=COUNTIF(${dateRange}, "S")`);
+          newSheet.getRange(targetRow, 38).setFormula(`=COUNTIF(${dateRange}, "I")`);
+          newSheet.getRange(targetRow, 39).setFormula(`=COUNTIF(${dateRange}, "A")`);
+        });
+      }
+
+      markHolidaysInSheet(newSheet);
+      return newSheet;
+    }
+
+    function updateCell(sheet, id, day, status) {
+      var data = sheet.getDataRange().getValues();
+      var idColumn = 0;
+      var dateColumnOffset = (sheet.getName().includes('RekapSiswa')) ? 4 : 3;
+      var dateColumn = day + dateColumnOffset;
+
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][idColumn]) == String(id)) {
+          sheet.getRange(i + 1, dateColumn).setValue(status);
+          return;
+        }
+      }
+    }
+
+    function resetColumnToHadir(sheet, day) {
+      if (isTodayHoliday()) return; // Jangan reset jika hari ini libur
+      var dateColumnOffset = (sheet.getName().includes('RekapSiswa')) ? 4 : 3;
+      var dateColumn = day + dateColumnOffset;
+      var lastRow = sheet.getLastRow();
+      if(lastRow > 1) {
+        var rangeToReset = sheet.getRange(2, dateColumn, lastRow - 1, 1);
+        var currentValues = rangeToReset.getValues();
+        var newValues = currentValues.map(function(row) {
+          return (row[0] === '-') ? ['-'] : ['H'];
+        });
+        rangeToReset.setValues(newValues);
+      }
+    }
+
+    function isTodayHoliday() {
+      var today = new Date();
+      var dayOfWeek = today.getDay();
+      return (dayOfWeek === 0 || dayOfWeek === 6);
+    }
+
+    function markHolidaysInSheet(sheet) {
+      var sheetNameParts = sheet.getName().split('-');
+      var year = parseInt(sheetNameParts[2], 10);
+      var monthString = sheetNameParts[1];
+      var months = { "Januari":0, "Februari":1, "Maret":2, "April":3, "Mei":4, "Juni":5, "Juli":6, "Agustus":7, "September":8, "Oktober":9, "November":10, "Desember":11 };
+      var month = months[monthString];
+
+      var dateColumnOffset = (sheet.getName().includes('RekapSiswa')) ? 4 : 3;
+      var lastRow = sheet.getLastRow();
+      if (lastRow < 2) return;
+
+      for(var day = 1; day <= 31; day++) {
+        var date;
+        try {
+          date = new Date(year, month, day);
+          if (date.getMonth() !== month) continue;
+        } catch (e) { continue; }
+        
+        var dayOfWeek = date.getDay();
+        if(dayOfWeek === 0 || dayOfWeek === 6) { 
+          sheet.getRange(2, day + dateColumnOffset, lastRow - 1, 1).setValue('-').setBackground('#d9d9d9');
+        }
+      }
+    }
+
+    // Fungsi trigger ini opsional, tapi sangat direkomendasikan
+    // Atur untuk berjalan setiap hari antara tengah malam - 1 pagi
+    function resetDailyTrigger() {
+      var date = new Date();
+      if (isTodayHoliday()) return;
+
+      var monthName = date.toLocaleString('id-ID', { month: 'long', timeZone: 'Asia/Jakarta' });
+      var year = date.getFullYear();
+      var day = date.getDate();
+
+      var siswaSheetName = `RekapSiswa-${monthName}-${year}`;
+      var guruSheetName = `RekapGuru-${monthName}-${year}`;
+
+      var siswaSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(siswaSheetName);
+      var guruSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(guruSheetName);
+
+      if (siswaSheet) resetColumnToHadir(siswaSheet, day);
+      if (guruSheet) resetColumnToHadir(guruSheet, day);
+    }
+    ```
+    ---------------------------------- BERHENTI MENYALIN DI SINI ----------------------------------
+    -->
 </body>
 </html>
-
