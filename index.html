@@ -67,6 +67,10 @@
         input[type="file"]::file-selector-button:hover {
             background-color: #1d4ed8;
         }
+        /* Mengubah kursor menjadi tangan untuk elemen yang bisa diklik */
+        a, button, [data-page], [onclick], .menu-item, .cursor-pointer {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -134,6 +138,12 @@
                         </div>
                         <input type="file" id="logo-input" class="hidden" accept="image/*">
                         <span class="text-xl font-bold text-white">SMP Diponegoro Sampang</span>
+                    </div>
+
+                    <!-- Realtime Clock -->
+                    <div id="realtime-clock" class="hidden md:flex flex-col items-center text-white">
+                        <span id="clock-time" class="text-xl font-bold tracking-wider"></span>
+                        <span id="clock-date" class="text-xs"></span>
                     </div>
 
                     <!-- Profile, Logout, and Mobile Menu Button -->
@@ -225,7 +235,7 @@
             <div id="beranda-page" class="page">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Selamat Datang!</h1>
                 <p class="text-base text-gray-600 mb-8">Sistem Informasi Absensi Siswa SMP Diponegoro Sampang.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-blue-100 rounded-full">
@@ -261,12 +271,23 @@
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
+                            <div class="p-3 bg-orange-100 rounded-full">
+                                <i data-lucide="thermometer" class="w-6 h-6 text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Sakit Hari Ini</p>
+                                <p id="total-sakit" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center space-x-4">
                             <div class="p-3 bg-red-100 rounded-full">
                                 <i data-lucide="user-x" class="w-6 h-6 text-red-600"></i>
                             </div>
                             <div>
-                                <p class="text-gray-500">Sakit/Alpha</p>
-                                <p id="total-absen" class="text-2xl font-bold text-gray-800">0</p>
+                                <p class="text-gray-500">Alpha Hari Ini</p>
+                                <p id="total-alpha" class="text-2xl font-bold text-gray-800">0</p>
                             </div>
                         </div>
                     </div>
@@ -676,6 +697,34 @@
 
             // --- FUNGSI-FUNGSI ---
             
+            // Fungsi untuk menampilkan jam dan tanggal realtime
+            function updateClock() {
+                const now = new Date();
+                const timeEl = document.getElementById('clock-time');
+                const dateEl = document.getElementById('clock-date');
+
+                if (timeEl && dateEl) {
+                    const timeString = now.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).replace(/\./g, ':');
+                    timeEl.textContent = timeString;
+
+                    const dateString = now.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    dateEl.textContent = dateString;
+                }
+            }
+
+            // Update jam setiap detik
+            setInterval(updateClock, 1000);
+            
             // Fungsi untuk menampilkan overlay loading
             function showLoading(message = 'Memuat...') {
                 const loadingOverlay = document.createElement('div');
@@ -746,6 +795,7 @@
 
             // Inisialisasi Aplikasi
             async function init() {
+                updateClock(); // Panggil sekali saat load
                 updatePlaceholders();
                 showLoading('Mengambil data awal...');
                 if (!SCRIPT_URL) {
@@ -778,34 +828,34 @@
 
             function generateDummyData(){
                 dataGuru = [
-                    {id: 1, nama: 'Ahmad Mutasir', jabatan: 'Kepala Sekolah', status: 'Hadir'},
-                    {id: 8, nama: 'Ina Solikhati', jabatan: 'Wakil Kepala Sekolah', status: 'Hadir'},
-                    {id: 7, nama: 'Urip Ambaripto', jabatan: 'Administrator', status: 'Hadir'},
-                    {id: 2, nama: 'Arief Kurniawan', jabatan: 'Guru Piket', status: 'Hadir'},
-                    {id: 3, nama: 'Salsabila Nur Anisa', jabatan: 'Guru Piket', status: 'Sakit'},
-                    {id: 4, nama: 'Heni Faridanti Auni', jabatan: 'Guru Piket', status: 'Hadir'},
-                    {id: 5, nama: 'Isti Kharirotun Nangimah', jabatan: 'Guru Piket', status: 'Hadir'},
-                    {id: 6, nama: 'Mukhammad Mukhamim', jabatan: 'Guru Piket', status: 'Izin'},
-                    {id: 21, nama: 'Nuryati', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 22, nama: 'Fadliyah', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 23, nama: 'Nuryati (2)', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 24, nama: 'Deka Ponco N', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 25, nama: 'Akmal Khoirul Riyadi', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 26, nama: 'Saefulloh', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 27, nama: 'Suyeni', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 9, nama: 'Mukhlison', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 10, nama: 'Warsito', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 11, nama: 'Ali Sadikin', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 12, nama: 'Syihabudin', jabatan: 'PTK', status: 'Alpha'},
-                    {id: 13, nama: 'Nurkhalimah', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 14, nama: 'Oktina Laili Hidayah', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 15, nama: 'Musngidul Umam', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 16, nama: 'Atin Septiasari', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 17, nama: 'Selvi Wulan Sari', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 18, nama: 'Putri Lailatus S', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 19, nama: 'Robi I', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 20, nama: 'Catur Andi K', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 28, nama: 'Situ', jabatan: 'TENDIK', status: 'Hadir'}
+                    {id: 1, nama: 'Ahmad Mutasir', jabatan: 'Kepala Sekolah'},
+                    {id: 8, nama: 'Ina Solikhati', jabatan: 'Wakil Kepala Sekolah'},
+                    {id: 7, nama: 'Urip Ambaripto', jabatan: 'Administrator'},
+                    {id: 2, nama: 'Arief Kurniawan', jabatan: 'Guru Piket'},
+                    {id: 3, nama: 'Salsabila Nur Anisa', jabatan: 'Guru Piket'},
+                    {id: 4, nama: 'Heni Faridanti Auni', jabatan: 'Guru Piket'},
+                    {id: 5, nama: 'Isti Kharirotun Nangimah', jabatan: 'Guru Piket'},
+                    {id: 6, nama: 'Mukhammad Mukhamim', jabatan: 'Guru Piket'},
+                    {id: 21, nama: 'Nuryati', jabatan: 'TENDIK'},
+                    {id: 22, nama: 'Fadliyah', jabatan: 'TENDIK'},
+                    {id: 23, nama: 'Nuryati (2)', jabatan: 'TENDIK'},
+                    {id: 24, nama: 'Deka Ponco N', jabatan: 'TENDIK'},
+                    {id: 25, nama: 'Akmal Khoirul Riyadi', jabatan: 'TENDIK'},
+                    {id: 26, nama: 'Saefulloh', jabatan: 'TENDIK'},
+                    {id: 27, nama: 'Suyeni', jabatan: 'TENDIK'},
+                    {id: 9, nama: 'Mukhlison', jabatan: 'PTK'},
+                    {id: 10, nama: 'Warsito', jabatan: 'PTK'},
+                    {id: 11, nama: 'Ali Sadikin', jabatan: 'PTK'},
+                    {id: 12, nama: 'Syihabudin', jabatan: 'PTK'},
+                    {id: 13, nama: 'Nurkhalimah', jabatan: 'PTK'},
+                    {id: 14, nama: 'Oktina Laili Hidayah', jabatan: 'PTK'},
+                    {id: 15, nama: 'Musngidul Umam', jabatan: 'PTK'},
+                    {id: 16, nama: 'Atin Septiasari', jabatan: 'PTK'},
+                    {id: 17, nama: 'Selvi Wulan Sari', jabatan: 'PTK'},
+                    {id: 18, nama: 'Putri Lailatus S', jabatan: 'PTK'},
+                    {id: 19, nama: 'Robi I', jabatan: 'PTK'},
+                    {id: 20, nama: 'Catur Andi K', jabatan: 'PTK'},
+                    {id: 28, nama: 'Tuslam', jabatan: 'TENDIK'}
                 ];
 
                 const firstNames = ["Budi", "Adi", "Eka", "Dwi", "Tri", "Catur", "Panca", "Sita", "Dewi", "Putri", "Agus", "Ahmad", "Siti", "Nur", "Rahmat", "Hidayat", "Joko", "Sri", "Wahyu", "Indah", "Rizki", "Zainal", "Fitri", "Lia", "Fajar", "Gilang", "Hafiz", "Irfan"];
@@ -817,7 +867,7 @@
                         const nisn = "00" + String(Math.floor(Math.random() * 90000000) + 10000000);
                         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
                         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-                        students.push({ nis, nisn, nama: `${firstName} ${lastName}`, kelas, status: 'Hadir' });
+                        students.push({ nis, nisn, nama: `${firstName} ${lastName}`, kelas });
                     }
                     return students;
                 };
@@ -1465,7 +1515,7 @@
                         guruPendingChanges.push({ action: 'editGuru', data: { id, nama, jabatan } });
                     } else {
                         const newId = Date.now();
-                        const newGuru = { id: newId, nama, jabatan, status: 'Hadir' };
+                        const newGuru = { id: newId, nama, jabatan };
                         dataGuru.push(newGuru);
                         guruPendingChanges.push({ action: 'addGuru', data: newGuru });
                     }
@@ -1539,7 +1589,7 @@
                             alert('NIS sudah ada. Silakan gunakan NIS yang lain.');
                             return;
                         }
-                        const newSiswa = { nis, nisn, nama, kelas, status: 'Hadir' };
+                        const newSiswa = { nis, nisn, nama, kelas };
                         dataSiswa.push(newSiswa);
                         siswaPendingChanges.push({ action: 'addSiswa', data: newSiswa });
                     }
@@ -1729,7 +1779,8 @@
 
                 document.getElementById('total-hadir').textContent = hadir;
                 document.getElementById('total-izin').textContent = izin;
-                document.getElementById('total-absen').textContent = sakit + alpha;
+                document.getElementById('total-sakit').textContent = sakit;
+                document.getElementById('total-alpha').textContent = alpha;
             }
 
             function renderPerClassCharts() {
