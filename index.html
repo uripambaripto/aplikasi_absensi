@@ -381,34 +381,26 @@
             <div id="data-siswa-page" class="page hidden">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Data Siswa</h1>
-                    <div class="flex flex-wrap items-center gap-4">
-                        <div class="flex items-center space-x-2">
-                            <label for="filter-kelas-data-siswa" class="text-sm font-medium text-gray-700">Filter Kelas:</label>
-                            <select id="filter-kelas-data-siswa" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="all">Semua Kelas</option>
-                            </select>
+                    <div class="flex items-center space-x-2">
+                        <button id="simpan-perubahan-siswa" class="btn btn-primary hidden">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>Simpan Perubahan</span>
+                        </button>
+                        <div id="bulk-action-container" class="hidden items-center space-x-2">
+                            <button id="hapus-terpilih-btn" class="btn btn-danger">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                <span>Hapus Terpilih</span>
+                            </button>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <button id="simpan-perubahan-siswa" class="btn btn-primary hidden">
-                                <i data-lucide="save" class="w-4 h-4"></i>
-                                <span>Simpan Perubahan</span>
-                            </button>
-                            <div id="bulk-action-container" class="hidden items-center space-x-2">
-                                <button id="hapus-terpilih-btn" class="btn btn-danger">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    <span>Hapus Terpilih</span>
-                                </button>
-                            </div>
-                            <button id="tambah-siswa-manual" class="btn btn-success">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                <span>Tambah Siswa</span>
-                            </button>
-                            <button id="upload-siswa-excel" class="btn btn-secondary">
-                                <i data-lucide="upload" class="w-4 h-4"></i>
-                                <span>Upload Excel</span>
-                            </button>
-                            <input type="file" id="siswa-file-input" class="hidden" accept=".xlsx, .xls">
-                        </div>
+                        <button id="tambah-siswa-manual" class="btn btn-success">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tambah Siswa</span>
+                        </button>
+                        <button id="upload-siswa-excel" class="btn btn-secondary">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            <span>Upload Excel</span>
+                        </button>
+                        <input type="file" id="siswa-file-input" class="hidden" accept=".xlsx, .xls">
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
@@ -904,7 +896,8 @@
                 muatDataSiswaTabel();
                 muatAbsensiSiswa();
                 muatAbsensiGuru();
-                populateAllKelasDropdowns(); 
+                populateFilterKelas();
+                populateLaporanFilterKelas(); 
                 updateDashboardCards();
             }
             
@@ -1151,17 +1144,13 @@
             }
 
             // Memuat data siswa ke tabel manajemen data
-            function muatDataSiswaTabel(kelasFilter = 'all') {
+            function muatDataSiswaTabel() {
                 const tabelBody = document.getElementById('tabel-data-siswa');
                 const selectAllCheckbox = document.getElementById('select-all-siswa');
                 tabelBody.innerHTML = '';
                 if(selectAllCheckbox) selectAllCheckbox.checked = false;
 
-                const filteredSiswa = (kelasFilter === 'all') 
-                    ? dataSiswa 
-                    : dataSiswa.filter(s => s.kelas === kelasFilter);
-
-                filteredSiswa.forEach((siswa, index) => {
+                dataSiswa.forEach((siswa, index) => {
                     const rowClass = index % 2 === 0 ? 'bg-white' : 'bg-green-50';
                     tabelBody.innerHTML += `
                         <tr class="${rowClass} hover:bg-green-100">
@@ -1256,18 +1245,24 @@
             }
 
 
-            // Mengisi semua dropdown filter kelas
-            function populateAllKelasDropdowns() {
-                const uniqueKelas = [...new Set(dataSiswa.map(s => s.kelas))].sort();
-                const selectors = '#filter-kelas, #filter-kelas-laporan, #filter-kelas-data-siswa';
-                document.querySelectorAll(selectors).forEach(select => {
-                    select.innerHTML = '<option value="all">Semua Kelas</option>';
-                    uniqueKelas.forEach(kelas => {
-                        select.innerHTML += `<option value="${kelas}">${kelas}</option>`;
-                    });
+            // Mengisi filter kelas
+            function populateFilterKelas() {
+                const kelasSet = new Set(dataSiswa.map(s => s.kelas));
+                filterKelas.innerHTML = '<option value="all">Semua Kelas</option>';
+                [...kelasSet].sort().forEach(kelas => {
+                    filterKelas.innerHTML += `<option value="${kelas}">${kelas}</option>`;
                 });
             }
 
+            function populateLaporanFilterKelas() {
+                const filterLaporan = document.getElementById('filter-kelas-laporan');
+                const kelasSet = new Set(dataSiswa.map(s => s.kelas));
+                filterLaporan.innerHTML = '<option value="all">Semua Kelas</option>';
+                [...kelasSet].sort().forEach(kelas => {
+                    filterLaporan.innerHTML += `<option value="${kelas}">${kelas}</option>`;
+                });
+            }
+            
             // Handle File Upload
             async function handleFileUpload(event, type) {
                 const file = event.target.files[0];
@@ -1392,10 +1387,6 @@
 
                 document.getElementById('filter-kelas-laporan').addEventListener('change', (e) => {
                     muatLaporanHarianSiswa(e.target.value);
-                });
-
-                 document.getElementById('filter-kelas-data-siswa').addEventListener('change', (e) => {
-                    muatDataSiswaTabel(e.target.value);
                 });
 
                 document.getElementById('tabel-absensi-siswa').addEventListener('click', async (e) => {
