@@ -1,0 +1,36 @@
+Langkah-Langkah Mengatur Reset Absensi Otomatis
+Agar absensi dapat ter-reset menjadi "Hadir" setiap tengah malam dan data terekam di sheet bulanan yang benar, Anda perlu mengatur sebuah "Trigger" (Pemicu) di Google Apps Script. Ikuti langkah-langkah berikut dengan saksama:
+
+Buka Editor Apps Script Anda.
+(Dari Google Sheet, klik Extensions > Apps Script).
+
+Pastikan Kode Terbaru Sudah Disimpan.
+Salin dan tempel kode dari file kode.gs yang baru, lalu klik ikon Simpan (gambar disket).
+
+Buka Menu Triggers.
+Di menu sebelah kiri, klik ikon jam alarm yang bertuliskan "Triggers".
+
+Tambahkan Trigger Baru.
+Di pojok kanan bawah, klik tombol "+ Add Trigger".
+
+Konfigurasi Trigger.
+Sebuah jendela pop-up akan muncul. Isi sebagai berikut:
+
+Choose which function to run: Pilih dailyResetTrigger.
+
+Choose which deployment should run: Biarkan Head.
+
+Select event source: Pilih Time-driven.
+
+Select type of time-based trigger: Pilih Day timer.
+
+Select time of day: Pilih Midnight to 1am.
+
+Failure notification settings: Biarkan Notify me daily.
+
+Pengaturan Anda akan terlihat seperti ini:
+
+Simpan Trigger.
+Klik tombol "Save". Google mungkin akan meminta izin otorisasi lagi. Izinkan saja.
+
+Selesai! Mulai sekarang, setiap hari antara pukul 00:00 dan 01:00, skrip akan secara otomatis menjalankan fungsi reset, mengisi absensi hari itu dengan status "Hadir" (atau "-" jika hari libur) untuk semua guru dan siswa di sheet bulanan Google Sheet Anda.
