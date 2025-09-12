@@ -23,42 +23,11 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff; /* Putih bersih */
+            background-color: #f0f2f5;
         }
-        .menu-item {
-            @apply px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-blue-600 rounded-md transition-colors duration-200 cursor-pointer font-medium;
-        }
-        .menu-item.active {
-            @apply bg-blue-600 text-white font-semibold hover:bg-blue-700;
-        }
-        .card {
-            @apply bg-white p-6 rounded-xl shadow-md transition-transform duration-300 hover:shadow-lg hover:-translate-y-1;
-        }
-        .btn {
-            @apply px-6 py-2 rounded-lg font-semibold text-white transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer;
-        }
-        .btn-primary {
-            @apply bg-blue-500 hover:bg-blue-600 shadow-sm hover:shadow-md;
-        }
-        .btn-success {
-            @apply bg-green-500 hover:bg-green-600 shadow-sm hover:shadow-md;
-        }
-        .btn-secondary {
-            @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
-        }
-        .btn-danger {
-            @apply bg-red-500 hover:bg-red-600;
-        }
-        .modal-overlay {
-            @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300;
-        }
-        .modal-content {
-            @apply bg-white p-8 rounded-2xl shadow-xl w-full max-w-md transform transition-transform duration-300 scale-95;
-        }
-        /* Custom scrollbar for better aesthetics */
+        /* Custom scrollbar for webkit browsers */
         ::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
@@ -70,19 +39,37 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Memastikan semua elemen interaktif menampilkan kursor tangan */
-        .btn, .menu-item, button, .cursor-pointer {
+        .sidebar-item.active {
+            background-color: #1e3a8a; /* A darker blue for active state */
+            color: white;
+            border-left: 4px solid #facc15; /* Yellow accent */
+        }
+        .hidden {
+            display: none;
+        }
+        .page {
+           animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Style for file input */
+        input[type="file"]::file-selector-button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-        /* Style for radio buttons in attendance */
-        .status-radio-group {
-            @apply flex items-center space-x-4;
+        input[type="file"]::file-selector-button:hover {
+            background-color: #1d4ed8;
         }
-        .status-radio-group label {
-            @apply flex items-center space-x-1 cursor-pointer text-sm;
-        }
-        .status-radio-group input[type="radio"] {
-            @apply h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500;
+        /* Mengubah kursor menjadi tangan untuk elemen yang bisa diklik */
+        a, button, [data-page], [onclick], .menu-item, .cursor-pointer {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -93,11 +80,16 @@
         <div class="w-full max-w-md">
             <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
                 <div class="flex justify-center mb-6">
-                     <div class="w-20 h-20 bg-blue-200 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.786-2.67 9.344m-1.339-2.344a15.895 15.895 0 01-4.991-1.423M5.33 18.001c-1.66-2.558-2.67-5.827-2.67-9.345 0-5.523 4.477-10 10-10s10 4.477 10 10c0 3.518-1.01 6.787-2.67 9.345m-14.66.001a15.895 15.895 0 014.991-1.423m5.338 0a15.895 15.895 0 004.991 1.423" />
-                        </svg>
+                     <div id="login-logo-container" class="relative cursor-pointer group w-20 h-20">
+                        <div id="login-logo-placeholder" class="w-20 h-20 bg-blue-200 rounded-full flex items-center justify-center">
+                            <span id="login-logo-initials-text" class="text-3xl font-bold text-blue-600">SD</span>
+                        </div>
+                        <img id="login-school-logo" src="#" alt="Logo Sekolah" class="w-20 h-20 rounded-full object-cover hidden">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 flex items-center justify-center rounded-full transition-opacity duration-300">
+                            <i data-lucide="camera" class="w-8 h-8 text-white opacity-0 group-hover:opacity-100"></i>
+                        </div>
                     </div>
+                    <input type="file" id="login-logo-input" class="hidden" accept="image/*">
                 </div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">SMP DIPONEGORO SAMPANG</h1>
                 <p class="text-gray-500 mb-6">Silakan login untuk melanjutkan</p>
@@ -122,7 +114,7 @@
                         </select>
                     </div>
                 </div>
-                <button id="login-btn" class="w-full btn btn-success mt-6 font-bold">Login</button>
+                <button id="login-btn" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300 mt-6 font-bold">Login</button>
             </div>
         </div>
     </div>
@@ -136,10 +128,8 @@
                     <!-- Logo and School Name -->
                     <div class="flex items-center space-x-4">
                          <div id="logo-container" class="relative cursor-pointer group">
-                            <div id="logo-placeholder" class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.786-2.67 9.344m-1.339-2.344a15.895 15.895 0 01-4.991-1.423M5.33 18.001c-1.66-2.558-2.67-5.827-2.67-9.345 0-5.523 4.477-10 10-10s10 4.477 10 10c0 3.518-1.01 6.787-2.67 9.345m-14.66.001a15.895 15.895 0 014.991-1.423m5.338 0a15.895 15.895 0 004.991 1.423" />
-                               </svg>
+                            <div id="logo-placeholder" class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-lg font-bold text-blue-600">
+                                <!-- Inisial akan diisi oleh JS -->
                            </div>
                            <img id="school-logo" src="#" alt="Logo Sekolah" class="w-10 h-10 rounded-full object-cover hidden">
                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 flex items-center justify-center rounded-full transition-opacity duration-300">
@@ -150,10 +140,19 @@
                         <span class="text-xl font-bold text-white">SMP Diponegoro Sampang</span>
                     </div>
 
+                    <!-- Realtime Clock -->
+                    <div id="realtime-clock" class="hidden md:flex flex-col items-center text-white">
+                        <span id="clock-time" class="text-xl font-bold tracking-wider"></span>
+                        <span id="clock-date" class="text-xs"></span>
+                    </div>
+
                     <!-- Profile, Logout, and Mobile Menu Button -->
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
                         <div id="profile-image-container" class="relative cursor-pointer group">
-                             <img id="profile-img" src="https://placehold.co/40x40/E0E7FF/4F46E5?text=G" alt="Foto Profil" class="w-10 h-10 rounded-full border-2 border-blue-200 object-cover">
+                             <div id="profile-placeholder" class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center border-2 border-blue-200 text-sm font-semibold text-blue-600">
+                                <!-- Inisial profil akan diisi oleh JS -->
+                             </div>
+                             <img id="profile-img" src="#" alt="Foto Profil" class="w-10 h-10 rounded-full border-2 border-blue-200 object-cover hidden">
                              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 flex items-center justify-center rounded-full transition-opacity duration-300">
                                 <i data-lucide="camera" class="w-5 h-5 text-white opacity-0 group-hover:opacity-100"></i>
                              </div>
@@ -181,7 +180,7 @@
         <nav id="app-nav" class="bg-white shadow-md sticky top-16 z-10">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex justify-center items-center h-12">
+                <div class="hidden md:flex justify-start items-center h-12">
                     <a data-page="beranda" id="menu-beranda" class="menu-item active">Beranda</a>
                     <span class="text-gray-300 mx-2">|</span>
                     <a data-page="guru" id="menu-guru" class="menu-item">Data Guru</a>
@@ -234,10 +233,10 @@
         <main id="content" class="container mx-auto p-4 sm:p-6 lg:p-8">
             <!-- Beranda Page -->
             <div id="beranda-page" class="page">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">Selamat Datang!</h1>
-                <p class="text-gray-600 mb-8">Sistem Informasi Absensi Siswa SMP Diponegoro Sampang.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="card">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Selamat Datang!</h1>
+                <p class="text-base text-gray-600 mb-8">Sistem Informasi Absensi Siswa SMP Diponegoro Sampang.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-blue-100 rounded-full">
                                 <i data-lucide="users" class="w-6 h-6 text-blue-600"></i>
@@ -248,7 +247,7 @@
                             </div>
                         </div>
                     </div>
-                     <div class="card">
+                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-green-100 rounded-full">
                                 <i data-lucide="user-check" class="w-6 h-6 text-green-600"></i>
@@ -259,7 +258,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-yellow-100 rounded-full">
                                 <i data-lucide="user-minus" class="w-6 h-6 text-yellow-600"></i>
@@ -270,55 +269,66 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center space-x-4">
+                            <div class="p-3 bg-orange-100 rounded-full">
+                                <i data-lucide="thermometer" class="w-6 h-6 text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Sakit Hari Ini</p>
+                                <p id="total-sakit" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
                             <div class="p-3 bg-red-100 rounded-full">
                                 <i data-lucide="user-x" class="w-6 h-6 text-red-600"></i>
                             </div>
                             <div>
-                                <p class="text-gray-500">Sakit/Alpha</p>
-                                <p id="total-absen" class="text-2xl font-bold text-gray-800">0</p>
+                                <p class="text-gray-500">Alpha Hari Ini</p>
+                                <p id="total-alpha" class="text-2xl font-bold text-gray-800">0</p>
                             </div>
                         </div>
                     </div>
                 </div>
                  <div class="mt-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Hari Ini per Kelas</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Hari Ini per Kelas</h2>
                     <div id="per-class-charts-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Diagram per kelas akan dimuat di sini oleh JavaScript -->
                     </div>
                 </div>
                 <div class="mt-12">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Bulan Ini per Kelas</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Bulan Ini per Kelas</h2>
                      <div id="monthly-per-class-charts-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Diagram bulanan per kelas akan dimuat di sini oleh JavaScript -->
                     </div>
                 </div>
                  <div class="mt-12">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Siswa</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Siswa</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
                             <div id="overall-daily-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
-                        <div class="card">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini (Simulasi)</h3>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
                             <div id="overall-monthly-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
                     </div>
                 </div>
                 <div id="grafik-guru-container" class="mt-12">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Guru</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Guru</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
                              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                                 <div id="overall-daily-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
                                 <div id="overall-daily-teacher-table"></div>
                             </div>
                         </div>
-                        <div class="card">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini (Simulasi)</h3>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
                              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                                 <div id="overall-monthly-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
                                 <div id="overall-monthly-teacher-table"></div>
@@ -331,7 +341,7 @@
             <!-- Data Guru Page -->
             <div id="guru-page" class="page hidden">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Data Guru</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Data Guru</h1>
                     <div class="flex items-center space-x-2">
                          <button id="simpan-perubahan-guru" class="btn btn-primary hidden">
                             <i data-lucide="save" class="w-4 h-4"></i>
@@ -348,7 +358,7 @@
                         <input type="file" id="guru-file-input" class="hidden" accept=".xlsx, .xls">
                     </div>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -370,7 +380,7 @@
             <!-- Data Siswa Page -->
             <div id="data-siswa-page" class="page hidden">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Data Siswa</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Data Siswa</h1>
                     <div class="flex items-center space-x-2">
                         <button id="simpan-perubahan-siswa" class="btn btn-primary hidden">
                             <i data-lucide="save" class="w-4 h-4"></i>
@@ -393,7 +403,7 @@
                         <input type="file" id="siswa-file-input" class="hidden" accept=".xlsx, .xls">
                     </div>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -419,13 +429,9 @@
             <!-- Absensi Siswa Page -->
             <div id="absensi-page" class="page hidden">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Absensi Siswa</h1>
-                     <button id="simpan-absensi-siswa" class="btn btn-success">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        <span>Simpan Perubahan</span>
-                    </button>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Absensi Siswa</h1>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="flex items-center justify-end mb-4">
                         <label for="filter-kelas" class="text-sm font-medium mr-2">Filter Kelas:</label>
                         <select id="filter-kelas" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -455,13 +461,9 @@
             <!-- Absensi Guru Page -->
             <div id="absensi-guru-page" class="page hidden">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Absensi Guru</h1>
-                     <button id="simpan-absensi-guru" class="btn btn-success">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        <span>Simpan Perubahan</span>
-                    </button>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Absensi Guru</h1>
                 </div>
-                <div class="card">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -483,7 +485,7 @@
             <!-- Laporan Page -->
             <div id="laporan-page" class="page hidden">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Laporan Absensi</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Laporan Absensi</h1>
                 </div>
 
                 <!-- Tab-like navigation for reports -->
@@ -508,7 +510,7 @@
 
                 <!-- Daily Student Report Content -->
                 <div id="laporan-harian-siswa-content">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                              <h2 class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Siswa Hari Ini</h2>
                              <div class="flex items-center">
@@ -538,7 +540,7 @@
 
                 <!-- Daily Guru Report Content -->
                 <div id="laporan-harian-guru-content" class="hidden">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                          <h2 class="text-xl font-semibold mb-4 text-gray-800">Rekapitulasi Ketidakhadiran Guru Hari Ini</h2>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
@@ -560,7 +562,7 @@
 
                 <!-- Siswa Monthly Report Content -->
                 <div id="laporan-bulanan-siswa-content" class="hidden">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex justify-between items-center">
                             <h2 class="text-xl font-semibold text-gray-800">Laporan Bulanan Siswa</h2>
                             <button id="download-siswa-pdf" class="btn btn-primary flex items-center space-x-2">
@@ -574,7 +576,7 @@
                 
                 <!-- Guru Monthly Report Content -->
                 <div id="laporan-bulanan-guru-content" class="hidden">
-                    <div class="card">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex justify-between items-center">
                             <h2 class="text-xl font-semibold text-gray-800">Laporan Bulanan Guru</h2>
                             <button id="download-guru-pdf" class="btn btn-primary flex items-center space-x-2">
@@ -589,8 +591,8 @@
 
             <!-- Tambah/Edit Guru Page -->
             <div id="tambah-guru-page" class="page hidden">
-                <h1 id="tambah-guru-page-title" class="text-3xl font-bold text-gray-800 mb-6">Tambah Guru Baru</h1>
-                <div class="card max-w-2xl mx-auto">
+                <h1 id="tambah-guru-page-title" class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tambah Guru Baru</h1>
+                <div class="bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
                     <form id="guru-form">
                         <input type="hidden" id="guru-id">
                         <div class="space-y-4">
@@ -603,7 +605,7 @@
                                 <input type="text" id="guru-jabatan" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                         </div>
-                        <div class="flex justify-end space-x-4 mt-8">
+                        <div class="flex justify-end space-x-2 mt-8">
                             <button type="button" id="batal-guru" class="btn btn-secondary px-6">Batal</button>
                             <button type="submit" id="simpan-guru-btn" class="btn btn-primary px-6">Simpan</button>
                         </div>
@@ -613,8 +615,8 @@
 
             <!-- Tambah/Edit Siswa Page -->
             <div id="tambah-siswa-page" class="page hidden">
-                 <h1 id="tambah-siswa-page-title" class="text-3xl font-bold text-gray-800 mb-6">Tambah Siswa Baru</h1>
-                 <div class="card max-w-2xl mx-auto">
+                 <h1 id="tambah-siswa-page-title" class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tambah Siswa Baru</h1>
+                 <div class="bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
                     <form id="siswa-form">
                         <input type="hidden" id="siswa-nis-edit">
                         <div class="space-y-4">
@@ -635,7 +637,7 @@
                                 <input type="text" id="siswa-kelas" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                         </div>
-                        <div class="flex justify-end space-x-4 mt-8">
+                        <div class="flex justify-end space-x-2 mt-8">
                             <button type="button" id="batal-siswa" class="btn btn-secondary px-6">Batal</button>
                             <button type="submit" class="btn btn-primary px-6">Simpan</button>
                         </div>
@@ -646,8 +648,8 @@
     </div>
     
     <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="modal-overlay hidden opacity-0">
-        <div class="modal-content scale-95 text-center">
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 hidden opacity-0">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm mx-auto shadow-xl transform transition-all duration-300 scale-95 text-center">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
                 <i data-lucide="alert-triangle" class="h-6 w-6 text-red-600"></i>
             </div>
@@ -655,7 +657,7 @@
             <div class="mt-2 px-7 py-3">
                 <p class="text-sm text-gray-500" id="confirm-message">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
             </div>
-            <div class="items-center px-4 py-3 flex justify-center space-x-4">
+            <div class="items-center px-4 py-3 flex justify-center space-x-2">
                 <button id="confirm-cancel" class="btn btn-secondary px-6">Batal</button>
                 <button id="confirm-delete" class="btn btn-danger px-6">Hapus</button>
             </div>
@@ -672,11 +674,13 @@
             
             // --- Google Apps Script URL ---
             // PENTING: Ganti dengan URL hasil deployment Google Apps Script Anda
-            const SCRIPT_URL = ''; // <-- PASTE URL ANDA DI SINI
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDT7RE7yxHyedg9X9NSIw714GnvZkpZaqI3duxLFZu4CuDcbOLvG2_vQxiqAEiUXxt_Q/exec'; // <-- PASTE URL ANDA DI SINI
 
             // --- DATA LOKAL (sebagai cache) ---
             let dataGuru = [];
             let dataSiswa = [];
+            let rekapSiswa = [];
+            let rekapGuru = [];
             let guruPendingChanges = [];
             let siswaPendingChanges = [];
 
@@ -692,6 +696,34 @@
             let currentUserRole = null; // Menyimpan jabatan pengguna yang login
 
             // --- FUNGSI-FUNGSI ---
+            
+            // Fungsi untuk menampilkan jam dan tanggal realtime
+            function updateClock() {
+                const now = new Date();
+                const timeEl = document.getElementById('clock-time');
+                const dateEl = document.getElementById('clock-date');
+
+                if (timeEl && dateEl) {
+                    const timeString = now.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).replace(/\./g, ':');
+                    timeEl.textContent = timeString;
+
+                    const dateString = now.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    dateEl.textContent = dateString;
+                }
+            }
+
+            // Update jam setiap detik
+            setInterval(updateClock, 1000);
             
             // Fungsi untuk menampilkan overlay loading
             function showLoading(message = 'Memuat...') {
@@ -720,6 +752,10 @@
             
             // Fungsi untuk mengirim data ke Google Apps Script
             async function postData(payload) {
+                 if (!SCRIPT_URL) {
+                    alert("Aksi tidak dapat dilanjutkan karena URL Google Apps Script belum diatur. Silakan perbarui file HTML Anda.");
+                    return false;
+                }
                 showLoading('Menyimpan data...');
                 try {
                     const response = await fetch(SCRIPT_URL, {
@@ -759,6 +795,8 @@
 
             // Inisialisasi Aplikasi
             async function init() {
+                updateClock(); // Panggil sekali saat load
+                updatePlaceholders();
                 showLoading('Mengambil data awal...');
                 if (!SCRIPT_URL) {
                      alert("PENTING: URL Google Apps Script belum diatur. Silakan ikuti file instructions.md dan paste URL Anda di dalam file HTML ini.");
@@ -771,6 +809,8 @@
                         const data = await response.json();
                         dataGuru = data.guru;
                         dataSiswa = data.siswa;
+                        rekapSiswa = data.rekapSiswa || [];
+                        rekapGuru = data.rekapGuru || [];
                     } catch (error) {
                          console.error("Gagal mengambil data awal:", error);
                          alert("Gagal mengambil data dari Google Sheets. Pastikan URL skrip Anda benar dan sudah di-deploy dengan benar (akses diatur ke 'Anyone').");
@@ -788,34 +828,34 @@
 
             function generateDummyData(){
                 dataGuru = [
-                    {id: 1, nama: 'Ahmad Mutasir', jabatan: 'Kepala Sekolah', status: 'Hadir'},
-                    {id: 8, nama: 'Ina Solikhati', jabatan: 'Wakil Kepala Sekolah', status: 'Hadir'},
-                    {id: 7, nama: 'Urip Ambaripto', jabatan: 'Administrator', status: 'Hadir'},
-                    {id: 2, nama: 'Arief Kurniawan', jabatan: 'Guru Piket', status: 'Hadir'},
-                    {id: 3, nama: 'Salsabila Nur Anisa', jabatan: 'Guru Piket', status: 'Sakit'},
-                    {id: 4, nama: 'Heni Faridanti Auni', jabatan: 'Guru Piket', status: 'Hadir'},
-                    {id: 5, nama: 'Isti Kharirotun Nangimah', jabatan: 'Guru Piket', status: 'Hadir'},
-                    {id: 6, nama: 'Mukhammad Mukhamim', jabatan: 'Guru Piket', status: 'Izin'},
-                    {id: 21, nama: 'Nuryati', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 22, nama: 'Fadliyah', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 23, nama: 'Nuryati (2)', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 24, nama: 'Deka Ponco N', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 25, nama: 'Akmal Khoirul Riyadi', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 26, nama: 'Saefulloh', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 27, nama: 'Suyeni', jabatan: 'TENDIK', status: 'Hadir'},
-                    {id: 9, nama: 'Mukhlison', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 10, nama: 'Warsito', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 11, nama: 'Ali Sadikin', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 12, nama: 'Syihabudin', jabatan: 'PTK', status: 'Alpha'},
-                    {id: 13, nama: 'Nurkhalimah', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 14, nama: 'Oktina Laili Hidayah', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 15, nama: 'Musngidul Umam', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 16, nama: 'Atin Septiasari', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 17, nama: 'Selvi Wulan Sari', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 18, nama: 'Putri Lailatus S', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 19, nama: 'Robi I', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 20, nama: 'Catur Andi K', jabatan: 'PTK', status: 'Hadir'},
-                    {id: 28, nama: 'Situ', jabatan: 'TENDIK', status: 'Hadir'}
+                    {id: 1, nama: 'Ahmad Mutasir', jabatan: 'Kepala Sekolah'},
+                    {id: 8, nama: 'Ina Solikhati', jabatan: 'Wakil Kepala Sekolah'},
+                    {id: 7, nama: 'Urip Ambaripto', jabatan: 'Administrator'},
+                    {id: 2, nama: 'Arief Kurniawan', jabatan: 'Guru Piket'},
+                    {id: 3, nama: 'Salsabila Nur Anisa', jabatan: 'Guru Piket'},
+                    {id: 4, nama: 'Heni Faridanti Auni', jabatan: 'Guru Piket'},
+                    {id: 5, nama: 'Isti Kharirotun Nangimah', jabatan: 'Guru Piket'},
+                    {id: 6, nama: 'Mukhammad Mukhamim', jabatan: 'Guru Piket'},
+                    {id: 21, nama: 'Nuryati', jabatan: 'TENDIK'},
+                    {id: 22, nama: 'Fadliyah', jabatan: 'TENDIK'},
+                    {id: 23, nama: 'Nuryati (2)', jabatan: 'TENDIK'},
+                    {id: 24, nama: 'Deka Ponco N', jabatan: 'TENDIK'},
+                    {id: 25, nama: 'Akmal Khoirul Riyadi', jabatan: 'TENDIK'},
+                    {id: 26, nama: 'Saefulloh', jabatan: 'TENDIK'},
+                    {id: 27, nama: 'Suyeni', jabatan: 'TENDIK'},
+                    {id: 9, nama: 'Mukhlison', jabatan: 'PTK'},
+                    {id: 10, nama: 'Warsito', jabatan: 'PTK'},
+                    {id: 11, nama: 'Ali Sadikin', jabatan: 'PTK'},
+                    {id: 12, nama: 'Syihabudin', jabatan: 'PTK'},
+                    {id: 13, nama: 'Nurkhalimah', jabatan: 'PTK'},
+                    {id: 14, nama: 'Oktina Laili Hidayah', jabatan: 'PTK'},
+                    {id: 15, nama: 'Musngidul Umam', jabatan: 'PTK'},
+                    {id: 16, nama: 'Atin Septiasari', jabatan: 'PTK'},
+                    {id: 17, nama: 'Selvi Wulan Sari', jabatan: 'PTK'},
+                    {id: 18, nama: 'Putri Lailatus S', jabatan: 'PTK'},
+                    {id: 19, nama: 'Robi I', jabatan: 'PTK'},
+                    {id: 20, nama: 'Catur Andi K', jabatan: 'PTK'},
+                    {id: 28, nama: 'Tuslam', jabatan: 'TENDIK'}
                 ];
 
                 const firstNames = ["Budi", "Adi", "Eka", "Dwi", "Tri", "Catur", "Panca", "Sita", "Dewi", "Putri", "Agus", "Ahmad", "Siti", "Nur", "Rahmat", "Hidayat", "Joko", "Sri", "Wahyu", "Indah", "Rizki", "Zainal", "Fitri", "Lia", "Fajar", "Gilang", "Hafiz", "Irfan"];
@@ -827,7 +867,7 @@
                         const nisn = "00" + String(Math.floor(Math.random() * 90000000) + 10000000);
                         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
                         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-                        students.push({ nis, nisn, nama: `${firstName} ${lastName}`, kelas, status: 'Hadir' });
+                        students.push({ nis, nisn, nama: `${firstName} ${lastName}`, kelas });
                     }
                     return students;
                 };
@@ -840,6 +880,14 @@
                 ['VIII A', 'VIII B', 'VIII C'].forEach(k => { allStudents.push(...generateStudents(k, currentNis, studentsPerClass)); currentNis += studentsPerClass; });
                 ['IX A', 'IX B', 'IX C', 'IX D'].forEach(k => { allStudents.push(...generateStudents(k, currentNis, studentsPerClass)); currentNis += studentsPerClass; });
                 dataSiswa = allStudents;
+                rekapSiswa = [
+                    ['NIS', 'Nama', 'Kelas', '1', '2', '3'],
+                    ['2000', 'Budi Santoso', 'VII A', 'H', 'H', 'S']
+                ];
+                rekapGuru = [
+                    ['ID', 'Nama', 'Jabatan', '1', '2', '3'],
+                    ['1', 'Ahmad Mutasir', 'Kepala Sekolah', 'H', 'H', 'I']
+                ];
             }
             
             function refreshUI() {
@@ -855,25 +903,38 @@
             
             // Load saved images from localStorage
             function loadSavedImages() {
-                const logoContainer = document.getElementById('logo-container');
-                const logoInput = document.getElementById('logo-input');
                 const schoolLogo = document.getElementById('school-logo');
                 const logoPlaceholder = document.getElementById('logo-placeholder');
-
-                const profileImageContainer = document.getElementById('profile-image-container');
-                const profileInput = document.getElementById('profile-input');
-                const profileImg = document.getElementById('profile-img');
-
                 const savedLogo = localStorage.getItem('schoolLogo');
+
+                const loginSchoolLogo = document.getElementById('login-school-logo');
+                const loginLogoPlaceholder = document.getElementById('login-logo-placeholder');
+
                 if (savedLogo) {
                     schoolLogo.src = savedLogo;
                     schoolLogo.classList.remove('hidden');
                     logoPlaceholder.classList.add('hidden');
-                }
 
-                const savedProfileImage = localStorage.getItem('profileImage');
-                if (savedProfileImage) {
-                    profileImg.src = savedProfileImage;
+                    loginSchoolLogo.src = savedLogo;
+                    loginSchoolLogo.classList.remove('hidden');
+                    loginLogoPlaceholder.classList.add('hidden');
+                }
+            }
+
+            function updatePlaceholders(guru = null) {
+                // School Logo Placeholder
+                const schoolName = "SMP Diponegoro Sampang";
+                let nameParts = schoolName.split(' ').filter(Boolean);
+                let initials = (nameParts.length > 1) ? nameParts[0][0] + nameParts[1][0] : nameParts[0].substring(0, 2);
+                document.getElementById('logo-placeholder').textContent = initials.toUpperCase();
+                document.getElementById('login-logo-initials-text').textContent = initials.toUpperCase();
+                
+                // Profile Placeholder
+                const profilePlaceholder = document.getElementById('profile-placeholder');
+                if (guru) {
+                     nameParts = guru.nama.split(' ').filter(Boolean);
+                     initials = (nameParts.length > 1) ? nameParts[0][0] + nameParts[1][0] : nameParts[0].substring(0, 2);
+                     profilePlaceholder.textContent = initials.toUpperCase();
                 }
             }
             
@@ -882,13 +943,13 @@
                 modal.classList.remove('hidden');
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
-                    modal.querySelector('.modal-content').classList.remove('scale-95');
+                    modal.querySelector('div').classList.remove('scale-95');
                 }, 10);
             }
 
             function hideModal(modal) {
                 modal.classList.add('opacity-0');
-                modal.querySelector('.modal-content').classList.add('scale-95');
+                modal.querySelector('div').classList.add('scale-95');
                 setTimeout(() => {
                     modal.classList.add('hidden');
                 }, 300);
@@ -943,6 +1004,13 @@
                     profileName.textContent = guru.nama;
                     profileRole.textContent = guru.jabatan;
                     
+                    updatePlaceholders(guru); // Set initials for profile
+                    loadSavedImages(); // Check for saved profile image after setting initials
+
+                    const savedProfileImage = localStorage.getItem('profileImage');
+                    document.getElementById('profile-img').classList.toggle('hidden', !savedProfileImage);
+                    document.getElementById('profile-placeholder').classList.toggle('hidden', !!savedProfileImage);
+
                     updateUIForRole();
                     updateAdminUI();
 
@@ -1118,9 +1186,9 @@
                     const radioGroupName = `status-${siswa.nis}`;
                     const statuses = ['Hadir', 'Sakit', 'Izin', 'Alpha'];
                     const radioButtons = statuses.map(status => `
-                        <label>
-                            <input type="radio" name="${radioGroupName}" value="${status}" data-nis="${siswa.nis}" class="attendance-radio" ${siswa.status === status ? 'checked' : ''}>
-                            <span>${status}</span>
+                        <label class="inline-flex items-center mr-4">
+                            <input type="radio" name="${radioGroupName}" value="${status}" data-nis="${siswa.nis}" class="attendance-radio form-radio h-4 w-4 text-blue-600" ${siswa.status === status ? 'checked' : ''}>
+                            <span class="ml-2 text-sm">${status}</span>
                         </label>
                     `).join('');
 
@@ -1133,7 +1201,7 @@
                             <td class="p-3 font-medium text-gray-800">${siswa.nama}</td>
                             <td class="p-3 text-gray-600">${siswa.kelas}</td>
                             <td class="p-3">
-                                <div class="status-radio-group">
+                                <div class="flex items-center">
                                     ${radioButtons}
                                 </div>
                             </td>
@@ -1153,9 +1221,9 @@
                     const radioGroupName = `status-guru-${guru.id}`;
                     const statuses = ['Hadir', 'Sakit', 'Izin', 'Alpha'];
                     const radioButtons = statuses.map(status => `
-                        <label>
-                            <input type="radio" name="${radioGroupName}" value="${status}" data-id="${guru.id}" class="attendance-radio-guru" ${guru.status === status ? 'checked' : ''}>
-                            <span>${status}</span>
+                        <label class="inline-flex items-center mr-4">
+                            <input type="radio" name="${radioGroupName}" value="${status}" data-id="${guru.id}" class="attendance-radio-guru form-radio h-4 w-4 text-blue-600" ${guru.status === status ? 'checked' : ''}>
+                            <span class="ml-2 text-sm">${status}</span>
                         </label>
                     `).join('');
 
@@ -1167,7 +1235,7 @@
                             <td class="p-3 font-medium text-gray-800">${guru.nama}</td>
                             <td class="p-3 text-gray-600">${guru.jabatan}</td>
                             <td class="p-3">
-                                <div class="status-radio-group">
+                                <div class="flex items-center">
                                     ${radioButtons}
                                 </div>
                             </td>
@@ -1260,26 +1328,41 @@
                 const logoContainer = document.getElementById('logo-container');
                 const logoInput = document.getElementById('logo-input');
                 const schoolLogo = document.getElementById('school-logo');
-                const logoPlaceholder = document.getElementById('logo-placeholder');
+                
                 const profileImageContainer = document.getElementById('profile-image-container');
                 const profileInput = document.getElementById('profile-input');
                 const profileImg = document.getElementById('profile-img');
 
+                const loginLogoContainer = document.getElementById('login-logo-container');
+                const loginLogoInput = document.getElementById('login-logo-input');
+                const loginSchoolLogo = document.getElementById('login-school-logo');
+
                 logoContainer.addEventListener('click', () => logoInput.click());
-                logoInput.addEventListener('change', (event) => {
+                loginLogoContainer.addEventListener('click', () => loginLogoInput.click());
+
+                const handleLogoUpload = (event) => {
                     const file = event.target.files[0];
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
                             const imageUrl = e.target.result;
+                            localStorage.setItem('schoolLogo', imageUrl);
+                            
+                            // Update both logos
                             schoolLogo.src = imageUrl;
                             schoolLogo.classList.remove('hidden');
-                            logoPlaceholder.classList.add('hidden');
-                            localStorage.setItem('schoolLogo', imageUrl);
+                            document.getElementById('logo-placeholder').classList.add('hidden');
+
+                            loginSchoolLogo.src = imageUrl;
+                            loginSchoolLogo.classList.remove('hidden');
+                            document.getElementById('login-logo-placeholder').classList.add('hidden');
                         };
                         reader.readAsDataURL(file);
                     }
-                });
+                };
+
+                logoInput.addEventListener('change', handleLogoUpload);
+                loginLogoInput.addEventListener('change', handleLogoUpload);
 
                 profileImageContainer.addEventListener('click', () => profileInput.click());
                 profileInput.addEventListener('change', (event) => {
@@ -1289,6 +1372,8 @@
                         reader.onload = (e) => {
                             const imageUrl = e.target.result;
                             profileImg.src = imageUrl;
+                            profileImg.classList.remove('hidden');
+                            document.getElementById('profile-placeholder').classList.add('hidden');
                             localStorage.setItem('profileImage', imageUrl);
                         };
                         reader.readAsDataURL(file);
@@ -1304,46 +1389,36 @@
                     muatLaporanHarianSiswa(e.target.value);
                 });
 
-                document.getElementById('tabel-absensi-siswa').addEventListener('click', (e) => {
+                document.getElementById('tabel-absensi-siswa').addEventListener('click', async (e) => {
                     if (e.target.classList.contains('attendance-radio')) {
                         const nis = e.target.dataset.nis;
                         const status = e.target.value;
                         const siswa = dataSiswa.find(s => s.nis === nis);
-                        if(siswa) {
-                            siswa.status = status;
+                        if(siswa && siswa.status !== status) {
+                           const success = await postData({ action: 'updateSiswaStatus', nis, status });
+                           if(success) {
+                                siswa.status = status;
+                                if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
+                                    renderChartsForPage('beranda');
+                                }
+                           }
                         }
                     }
                 });
 
-                 document.getElementById('tabel-absensi-guru').addEventListener('click', (e) => {
+                 document.getElementById('tabel-absensi-guru').addEventListener('click', async (e) => {
                     if (e.target.classList.contains('attendance-radio-guru')) {
                         const id = e.target.dataset.id;
                         const status = e.target.value;
                         const guru = dataGuru.find(g => g.id == id);
-                        if(guru) {
-                            guru.status = status;
-                        }
-                    }
-                });
-
-                document.getElementById('simpan-absensi-siswa').addEventListener('click', async () => {
-                    const updates = dataSiswa.map(s => ({ nis: s.nis, status: s.status }));
-                    const success = await postData({ action: 'updateBulkSiswaStatus', data: updates });
-                    if (success) {
-                        alert('Absensi siswa berhasil disimpan!');
-                        if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
-                            renderChartsForPage('beranda');
-                        }
-                    }
-                });
-
-                 document.getElementById('simpan-absensi-guru').addEventListener('click', async () => {
-                    const updates = dataGuru.map(g => ({ id: g.id, status: g.status }));
-                    const success = await postData({ action: 'updateBulkGuruStatus', data: updates });
-                    if (success) {
-                        alert('Absensi guru berhasil disimpan!');
-                        if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
-                            renderChartsForPage('beranda');
+                        if(guru && guru.status !== status) {
+                           const success = await postData({ action: 'updateGuruStatus', id, status });
+                           if (success) {
+                                guru.status = status;
+                                if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
+                                    renderChartsForPage('beranda');
+                                }
+                           }
                         }
                     }
                 });
@@ -1440,7 +1515,7 @@
                         guruPendingChanges.push({ action: 'editGuru', data: { id, nama, jabatan } });
                     } else {
                         const newId = Date.now();
-                        const newGuru = { id: newId, nama, jabatan, status: 'Hadir' };
+                        const newGuru = { id: newId, nama, jabatan };
                         dataGuru.push(newGuru);
                         guruPendingChanges.push({ action: 'addGuru', data: newGuru });
                     }
@@ -1514,7 +1589,7 @@
                             alert('NIS sudah ada. Silakan gunakan NIS yang lain.');
                             return;
                         }
-                        const newSiswa = { nis, nisn, nama, kelas, status: 'Hadir' };
+                        const newSiswa = { nis, nisn, nama, kelas };
                         dataSiswa.push(newSiswa);
                         siswaPendingChanges.push({ action: 'addSiswa', data: newSiswa });
                     }
@@ -1601,10 +1676,10 @@
                 
                 // Excel Upload Listeners
                 document.getElementById('upload-guru-excel').addEventListener('click', () => document.getElementById('guru-file-input').click());
-                document.getElementById('upload-guru-excel').addEventListener('change', (e) => handleFileUpload(e, 'guru'));
+                document.getElementById('guru-file-input').addEventListener('change', (e) => handleFileUpload(e, 'guru'));
                 
                 document.getElementById('upload-siswa-excel').addEventListener('click', () => document.getElementById('siswa-file-input').click());
-                document.getElementById('upload-siswa-excel').addEventListener('change', (e) => handleFileUpload(e, 'siswa'));
+                document.getElementById('siswa-file-input').addEventListener('change', (e) => handleFileUpload(e, 'siswa'));
             }
 
             function updateSaveButtonsUI() {
@@ -1615,8 +1690,8 @@
                     saveGuruBtn.style.display = guruPendingChanges.length > 0 ? 'flex' : 'none';
                     saveSiswaBtn.style.display = siswaPendingChanges.length > 0 ? 'flex' : 'none';
                 } else {
-                    saveGuruBtn.style.display = 'none';
-                    saveSiswaBtn.style.display = 'none';
+                    if (saveGuruBtn) saveGuruBtn.style.display = 'none';
+                    if (saveSiswaBtn) saveSiswaBtn.style.display = 'none';
                 }
             }
 
@@ -1704,7 +1779,8 @@
 
                 document.getElementById('total-hadir').textContent = hadir;
                 document.getElementById('total-izin').textContent = izin;
-                document.getElementById('total-absen').textContent = sakit + alpha;
+                document.getElementById('total-sakit').textContent = sakit;
+                document.getElementById('total-alpha').textContent = alpha;
             }
 
             function renderPerClassCharts() {
@@ -1725,7 +1801,7 @@
                     const tableId = `table-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
 
                     container.innerHTML += `
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <div class="flex justify-between items-center mb-2">
                                 <h3 class="text-lg font-semibold text-gray-800">Kelas ${kelas}</h3>
                                 <p class="text-sm text-gray-500 font-medium">${totalSiswaDiKelas} Siswa</p>
@@ -1754,13 +1830,31 @@
                         ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
                     ]);
                     
+                    const isMobile = window.innerWidth < 768;
                     const options = {
                         legend: { position: "none" },
                         backgroundColor: 'transparent',
-                        chartArea: { width: '85%', height: '80%' },
-                        hAxis: { textStyle: { fontSize: 11 } },
-                        vAxis: { gridlines: { color: 'transparent' }, format: '0' },
-                        annotations: { textStyle: { fontSize: 11, bold: true, color: '#333' }, alwaysOutside: true },
+                        chartArea: { 
+                            width: isMobile ? '70%' : '85%', 
+                            height: '80%' 
+                        },
+                        hAxis: { 
+                            textStyle: { fontSize: isMobile ? 9 : 11 },
+                            slantedText: isMobile,
+                            slantedTextAngle: 45 
+                        },
+                        vAxis: { 
+                            gridlines: { color: 'transparent' }, 
+                            format: '0' 
+                        },
+                        annotations: { 
+                            textStyle: { 
+                                fontSize: isMobile ? 9 : 11, 
+                                bold: true, 
+                                color: '#333' 
+                            }, 
+                            alwaysOutside: true 
+                        },
                     };
                     
                     const chart = new google.visualization.ColumnChart(document.getElementById(`chart-kelas-${kelas.replace(/\s+/g, '-')}`));
@@ -1789,7 +1883,7 @@
                     const tableId = `table-monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
 
                     container.innerHTML += `
-                        <div class="card">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
                             <div class="flex justify-between items-center mb-2">
                                 <h3 class="text-lg font-semibold text-gray-800">Kelas ${kelas}</h3>
                                 <p class="text-sm text-gray-500 font-medium">${totalSiswaDiKelas} Siswa</p>
@@ -1820,13 +1914,30 @@
                         ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
                     ]);
 
+                    const isMobile = window.innerWidth < 768;
                     const options = {
                         legend: { position: "none" },
                         backgroundColor: 'transparent',
-                        chartArea: { width: '85%', height: '80%' },
-                        hAxis: { textStyle: { fontSize: 11 } },
-                        vAxis: { gridlines: { color: 'transparent' } },
-                        annotations: { textStyle: { fontSize: 11, bold: true, color: '#333' }, alwaysOutside: true },
+                        chartArea: { 
+                            width: isMobile ? '70%' : '85%', 
+                            height: '80%' 
+                        },
+                         hAxis: { 
+                            textStyle: { fontSize: isMobile ? 9 : 11 },
+                            slantedText: isMobile,
+                            slantedTextAngle: 45 
+                        },
+                        vAxis: { 
+                            gridlines: { color: 'transparent' } 
+                        },
+                        annotations: { 
+                            textStyle: { 
+                                fontSize: isMobile ? 9 : 11, 
+                                bold: true, 
+                                color: '#333' 
+                            }, 
+                            alwaysOutside: true 
+                        },
                     };
 
                     const chart = new google.visualization.ColumnChart(document.getElementById(`monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`));
@@ -1857,12 +1968,22 @@
                     ['Alpha', alpha]
                 ]);
 
+                const isMobile = window.innerWidth < 768;
                 const options = {
                     is3D: true,
                     pieHole: 0.4, // This makes it a doughnut chart
                     backgroundColor: 'transparent',
-                    pieSliceText: 'none', // Hide text inside slice
-                    legend: { position: 'labeled' }, // Show text outside with leader lines
+                    pieSliceText: isMobile ? 'percentage' : 'none', // Show percentage inside on mobile
+                    legend: { 
+                        position: isMobile ? 'bottom' : 'labeled', // Use bottom legend on mobile
+                        textStyle: { fontSize: 11 }
+                    },
+                    chartArea: {
+                        left: isMobile ? 10 : 20,
+                        top: 20,
+                        width: '90%',
+                        height: isMobile ? '70%' : '85%'
+                    },
                     colors: ['#34D399', '#F87171', '#FBBF24', '#9CA3AF']
                 };
                 
@@ -1871,13 +1992,20 @@
             }
 
             function renderOverallMonthlyPieChart() {
-                const totalSiswa = dataSiswa.length;
-                const schoolDaysInMonth = 22;
-                const totalPossibleAttendance = totalSiswa * schoolDaysInMonth;
-                const alpha = Math.floor(Math.random() * totalSiswa * 2);
-                const sakit = Math.floor(Math.random() * totalSiswa * 3);
-                const izin = Math.floor(Math.random() * totalSiswa * 2);
-                const hadir = totalPossibleAttendance - alpha - sakit - izin;
+                let hadir = 0, sakit = 0, izin = 0, alpha = 0;
+        
+                // Skip header row (index 0)
+                for (let i = 1; i < rekapSiswa.length; i++) {
+                    const row = rekapSiswa[i];
+                    for (let j = 3; j < row.length; j++) { // Date columns start at index 3
+                        switch(row[j]) {
+                            case 'H': hadir++; break;
+                            case 'S': sakit++; break;
+                            case 'I': izin++; break;
+                            case 'A': alpha++; break;
+                        }
+                    }
+                }
 
                 const data = google.visualization.arrayToDataTable([
                     ['Status', 'Jumlah'],
@@ -1887,12 +2015,22 @@
                     ['Alpha', alpha]
                 ]);
 
+                const isMobile = window.innerWidth < 768;
                 const options = {
                     is3D: true,
                     pieHole: 0.4,
                     backgroundColor: 'transparent',
-                    pieSliceText: 'none',
-                    legend: { position: 'labeled' },
+                    pieSliceText: isMobile ? 'percentage' : 'none',
+                    legend: { 
+                        position: isMobile ? 'bottom' : 'labeled',
+                        textStyle: { fontSize: 11 }
+                    },
+                     chartArea: {
+                        left: isMobile ? 10 : 20,
+                        top: 20,
+                        width: '90%',
+                        height: isMobile ? '70%' : '85%'
+                    },
                     colors: ['#3B82F6', '#F87171', '#FBBF24', '#9CA3AF']
                 };
 
@@ -1914,12 +2052,22 @@
                     ['Alpha', alpha]
                 ]);
 
+                const isMobile = window.innerWidth < 768;
                 const options = {
                     is3D: true,
                     pieHole: 0.4,
                     backgroundColor: 'transparent',
-                    pieSliceText: 'none',
-                    legend: { position: 'labeled' },
+                    pieSliceText: isMobile ? 'percentage' : 'none',
+                    legend: { 
+                        position: isMobile ? 'bottom' : 'labeled',
+                        textStyle: { fontSize: 10 } 
+                    },
+                    chartArea: {
+                        left: 5,
+                        top: 15,
+                        width: '90%',
+                        height: isMobile ? '75%' : '85%'
+                    },
                     colors: ['#34D399', '#F87171', '#FBBF24', '#9CA3AF']
                 };
                 
@@ -1931,13 +2079,20 @@
             }
 
             function renderOverallMonthlyTeacherPieChart() {
-                const totalGuru = dataGuru.length;
-                const schoolDaysInMonth = 22;
-                const totalPossibleAttendance = totalGuru * schoolDaysInMonth;
-                const alpha = Math.floor(Math.random() * 2); 
-                const sakit = Math.floor(Math.random() * 3);
-                const izin = Math.floor(Math.random() * 2);
-                const hadir = totalPossibleAttendance - alpha - sakit - izin;
+                let hadir = 0, sakit = 0, izin = 0, alpha = 0;
+                
+                // Skip header row (index 0)
+                for (let i = 1; i < rekapGuru.length; i++) {
+                    const row = rekapGuru[i];
+                    for (let j = 3; j < row.length; j++) { // Date columns start at index 3
+                        switch(row[j]) {
+                            case 'H': hadir++; break;
+                            case 'S': sakit++; break;
+                            case 'I': izin++; break;
+                            case 'A': alpha++; break;
+                        }
+                    }
+                }
 
                 const data = google.visualization.arrayToDataTable([
                     ['Status', 'Jumlah'],
@@ -1947,12 +2102,22 @@
                     ['Alpha', alpha]
                 ]);
 
+                const isMobile = window.innerWidth < 768;
                 const options = {
                     is3D: true,
                     pieHole: 0.4,
                     backgroundColor: 'transparent',
-                    pieSliceText: 'none',
-                    legend: { position: 'labeled' },
+                    pieSliceText: isMobile ? 'percentage' : 'none',
+                    legend: { 
+                        position: isMobile ? 'bottom' : 'labeled',
+                        textStyle: { fontSize: 10 }
+                    },
+                    chartArea: {
+                        left: 5,
+                        top: 15,
+                        width: '90%',
+                        height: isMobile ? '75%' : '85%'
+                    },
                     colors: ['#3B82F6', '#F87171', '#FBBF24', '#9CA3AF']
                 };
 
