@@ -995,6 +995,12 @@
                 const selectedJabatan = jabatanLogin.value;
                 const guru = dataGuru.find(g => g.id == enteredId && g.id == selectedGuruId && g.jabatan === selectedJabatan);
 
+                if (!enteredId || !selectedGuruId || !selectedJabatan) {
+                loginError.querySelector('span').textContent = 'Semua field harus diisi.';
+                loginError.classList.remove('hidden');
+                return;
+                }
+                
                 if (guru) {
                     currentUserRole = guru.jabatan; 
                     loginScreen.classList.add('hidden');
@@ -2415,6 +2421,18 @@
                     const pageId = visiblePage.id.replace('-page', '');
                     renderChartsForPage(pageId);
                 }
+
+            // Tambahkan debounce untuk resize event
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+            const visiblePage = document.querySelector('.page:not(.hidden)');
+            if (visiblePage) {
+            const pageId = visiblePage.id.replace('-page', '');
+            renderChartsForPage(pageId);
+            }
+            }, 250);
             });
 
             // Inisialisasi aplikasi saat DOM siap
@@ -2423,3 +2441,4 @@
     </script>
 </body>
 </html>
+
