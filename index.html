@@ -182,10 +182,14 @@
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex justify-start items-center h-12">
                     <a data-page="beranda" id="menu-beranda" class="menu-item active">Beranda</a>
-                    <span class="text-gray-300 mx-2">|</span>
-                    <a data-page="guru" id="menu-guru" class="menu-item">Data Guru</a>
-                    <span class="text-gray-300 mx-2">|</span>
-                    <a data-page="data-siswa" id="menu-data-siswa" class="menu-item">Data Siswa</a>
+                    <div id="menu-data-guru-container" class="contents">
+                        <span class="text-gray-300 mx-2">|</span>
+                        <a data-page="guru" id="menu-guru" class="menu-item">Data Guru</a>
+                    </div>
+                    <div id="menu-data-siswa-container" class="contents">
+                        <span class="text-gray-300 mx-2">|</span>
+                        <a data-page="data-siswa" id="menu-data-siswa" class="menu-item">Data Siswa</a>
+                    </div>
                     
                     <!-- Menu Absensi Dinamis berdasarkan Peran (START) -->
                     <!-- Container for Guru Piket -->
@@ -220,8 +224,8 @@
                  <!-- Mobile Menu -->
                 <div id="mobile-menu" class="hidden md:hidden py-2">
                     <a data-page="beranda" class="block menu-item active text-center">Beranda</a>
-                    <a data-page="guru" class="block menu-item">Data Guru</a>
-                    <a data-page="data-siswa" class="block menu-item text-center">Data Siswa</a>
+                    <a data-page="guru" id="mobile-menu-guru" class="block menu-item">Data Guru</a>
+                    <a data-page="data-siswa" id="mobile-menu-data-siswa" class="block menu-item text-center">Data Siswa</a>
                     <a data-page="absensi" class="block menu-item text-center">Absensi Siswa</a>
                     <a data-page="absensi-guru" class="block menu-item text-center">Absensi Guru</a>
                     <a data-page="laporan" class="block menu-item text-center">Laporan</a>
@@ -322,17 +326,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 id="chart-title-teacher-daily" class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
-                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
-                                <div id="overall-daily-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
-                                <div id="overall-daily-teacher-table"></div>
-                            </div>
+                            <div id="overall-daily-teacher-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h3 id="chart-title-teacher-monthly" class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
-                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
-                                <div id="overall-monthly-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
-                                <div id="overall-monthly-teacher-table"></div>
-                            </div>
+                            <div id="overall-monthly-teacher-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
                     </div>
                 </div>
@@ -404,6 +402,13 @@
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-end mb-4">
+                        <label for="filter-kelas-data-siswa" class="text-sm font-medium mr-2">Filter Kelas:</label>
+                        <select id="filter-kelas-data-siswa" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">Semua Kelas</option>
+                                <!-- Opsi kelas akan dimuat di sini -->
+                        </select>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-green-600 text-white">
@@ -425,10 +430,10 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Absensi Siswa Page -->
             <div id="absensi-page" class="page hidden">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Absensi Siswa</h1>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
@@ -951,6 +956,7 @@
                 muatAbsensiGuru();
                 populateFilterKelas();
                 populateLaporanFilterKelas(); 
+                populateFilterKelasDataSiswa();
                 updateDateDisplays(); // Memperbarui tanggal
                 updateMonthYearDisplays(); // Memperbarui bulan-tahun
                 updateDashboardCards();
@@ -1111,6 +1117,17 @@
                     menuAdmin.style.display = 'contents';
                 }
 
+                // Hide/show data management menus
+                const menuDataGuru = document.getElementById('menu-data-guru-container');
+                const menuDataSiswa = document.getElementById('menu-data-siswa-container');
+                const mobileMenuGuru = document.getElementById('mobile-menu-guru');
+                const mobileMenuDataSiswa = document.getElementById('mobile-menu-data-siswa');
+
+                if(menuDataGuru) menuDataGuru.style.display = isAdmin ? 'contents' : 'none';
+                if(menuDataSiswa) menuDataSiswa.style.display = isAdmin ? 'contents' : 'none';
+                if(mobileMenuGuru) mobileMenuGuru.style.display = isAdmin ? 'block' : 'none';
+                if(mobileMenuDataSiswa) mobileMenuDataSiswa.style.display = isAdmin ? 'block' : 'none';
+
                 const grafikGuruContainer = document.getElementById('grafik-guru-container');
                 if (grafikGuruContainer) {
                     grafikGuruContainer.style.display = isPiket ? 'none' : '';
@@ -1199,13 +1216,22 @@
             }
 
             // Memuat data siswa ke tabel manajemen data
-            function muatDataSiswaTabel() {
+            function muatDataSiswaTabel(kelas = 'all') {
                 const tabelBody = document.getElementById('tabel-data-siswa');
                 const selectAllCheckbox = document.getElementById('select-all-siswa');
+                
+                // Cek jika elemen tabelBody ada sebelum memanipulasinya
+                if (!tabelBody) {
+                    console.error("Elemen dengan ID 'tabel-data-siswa' tidak ditemukan.");
+                    return;
+                }
+                
                 tabelBody.innerHTML = '';
                 if(selectAllCheckbox) selectAllCheckbox.checked = false;
 
-                dataSiswa.forEach((siswa, index) => {
+                const filteredSiswa = (kelas === 'all') ? dataSiswa : dataSiswa.filter(s => s.kelas === kelas);
+
+                filteredSiswa.forEach((siswa, index) => {
                     const rowClass = index % 2 === 0 ? 'bg-white' : 'bg-green-50';
                     tabelBody.innerHTML += `
                         <tr class="${rowClass} hover:bg-green-100">
@@ -1315,6 +1341,15 @@
                 filterLaporan.innerHTML = '<option value="all">Semua Kelas</option>';
                 [...kelasSet].sort().forEach(kelas => {
                     filterLaporan.innerHTML += `<option value="${kelas}">${kelas}</option>`;
+                });
+            }
+            
+            function populateFilterKelasDataSiswa() {
+                const filter = document.getElementById('filter-kelas-data-siswa');
+                const kelasSet = new Set(dataSiswa.map(s => s.kelas));
+                filter.innerHTML = '<option value="all">Semua Kelas</option>';
+                [...kelasSet].sort().forEach(kelas => {
+                    filter.innerHTML += `<option value="${kelas}">${kelas}</option>`;
                 });
             }
             
@@ -1438,6 +1473,10 @@
 
                 filterKelas.addEventListener('change', (e) => {
                     muatAbsensiSiswa(e.target.value);
+                });
+
+                document.getElementById('filter-kelas-data-siswa').addEventListener('change', (e) => {
+                    muatDataSiswaTabel(e.target.value);
                 });
 
                 document.getElementById('filter-kelas-laporan').addEventListener('change', (e) => {
@@ -2014,35 +2053,42 @@
                 const sakit = dataSiswa.filter(s => s.status === 'Sakit').length;
                 const izin = dataSiswa.filter(s => s.status === 'Izin').length;
                 const alpha = dataSiswa.filter(s => s.status === 'Alpha').length;
-                
+                const total = hadir + sakit + izin + alpha;
+
                 const data = google.visualization.arrayToDataTable([
-                    ['Status', 'Jumlah'],
-                    ['Hadir', hadir],
-                    ['Sakit', sakit],
-                    ['Izin', izin],
-                    ['Alpha', alpha]
+                    ['Status', 'Jumlah', { role: 'style' }, { role: 'annotation' }],
+                    ['Hadir', hadir, '#34D399', total > 0 ? `${(hadir/total*100).toFixed(0)}%` : '0%'],
+                    ['Sakit', sakit, '#F87171', total > 0 ? `${(sakit/total*100).toFixed(0)}%` : '0%'],
+                    ['Izin', izin, '#FBBF24', total > 0 ? `${(izin/total*100).toFixed(0)}%` : '0%'],
+                    ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
                 ]);
 
                 const isMobile = window.innerWidth < 768;
                 const options = {
-                    is3D: true,
-                    pieHole: 0.4, // This makes it a doughnut chart
+                    legend: { position: "none" },
                     backgroundColor: 'transparent',
-                    pieSliceText: isMobile ? 'percentage' : 'none', // Show percentage inside on mobile
-                    legend: { 
-                        position: isMobile ? 'bottom' : 'labeled', // Use bottom legend on mobile
-                        textStyle: { fontSize: 11 }
-                    },
                     chartArea: {
-                        left: isMobile ? 10 : 20,
-                        top: 20,
-                        width: '90%',
-                        height: isMobile ? '70%' : '85%'
+                        width: '85%',
+                        height: '80%'
                     },
-                    colors: ['#34D399', '#F87171', '#FBBF24', '#9CA3AF']
+                    hAxis: {
+                        textStyle: { fontSize: isMobile ? 10 : 12 }
+                    },
+                    vAxis: {
+                        gridlines: { color: 'transparent' },
+                        format: '0'
+                    },
+                    annotations: {
+                        textStyle: {
+                            fontSize: 12,
+                            bold: true,
+                            color: '#333'
+                        },
+                        alwaysOutside: true
+                    },
                 };
                 
-                const chart = new google.visualization.PieChart(document.getElementById('overall-daily-pie-chart'));
+                const chart = new google.visualization.ColumnChart(document.getElementById('overall-daily-pie-chart'));
                 chart.draw(data, options);
             }
 
@@ -2061,35 +2107,42 @@
                         }
                     }
                 }
+                const total = hadir + sakit + izin + alpha;
 
                 const data = google.visualization.arrayToDataTable([
-                    ['Status', 'Jumlah'],
-                    ['Hadir', hadir],
-                    ['Sakit', sakit],
-                    ['Izin', izin],
-                    ['Alpha', alpha]
+                    ['Status', 'Jumlah', { role: 'style' }, { role: 'annotation' }],
+                    ['Hadir', hadir, '#3B82F6', total > 0 ? `${(hadir/total*100).toFixed(0)}%` : '0%'],
+                    ['Sakit', sakit, '#F87171', total > 0 ? `${(sakit/total*100).toFixed(0)}%` : '0%'],
+                    ['Izin', izin, '#FBBF24', total > 0 ? `${(izin/total*100).toFixed(0)}%` : '0%'],
+                    ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
                 ]);
 
                 const isMobile = window.innerWidth < 768;
                 const options = {
-                    is3D: true,
-                    pieHole: 0.4,
+                    legend: { position: "none" },
                     backgroundColor: 'transparent',
-                    pieSliceText: isMobile ? 'percentage' : 'none',
-                    legend: { 
-                        position: isMobile ? 'bottom' : 'labeled',
-                        textStyle: { fontSize: 11 }
+                    chartArea: {
+                        width: '85%',
+                        height: '80%'
                     },
-                     chartArea: {
-                        left: isMobile ? 10 : 20,
-                        top: 20,
-                        width: '90%',
-                        height: isMobile ? '70%' : '85%'
+                    hAxis: {
+                        textStyle: { fontSize: isMobile ? 10 : 12 }
                     },
-                    colors: ['#3B82F6', '#F87171', '#FBBF24', '#9CA3AF']
+                    vAxis: {
+                        gridlines: { color: 'transparent' },
+                        format: '0'
+                    },
+                    annotations: {
+                        textStyle: {
+                            fontSize: 12,
+                            bold: true,
+                            color: '#333'
+                        },
+                        alwaysOutside: true
+                    },
                 };
 
-                const chart = new google.visualization.PieChart(document.getElementById('overall-monthly-pie-chart'));
+                const chart = new google.visualization.ColumnChart(document.getElementById('overall-monthly-pie-chart'));
                 chart.draw(data, options);
             }
 
@@ -2098,39 +2151,43 @@
                 const sakit = dataGuru.filter(g => g.status === 'Sakit').length;
                 const izin = dataGuru.filter(g => g.status === 'Izin').length;
                 const alpha = dataGuru.filter(g => g.status === 'Alpha').length;
+                const total = hadir + sakit + izin + alpha;
                 
                 const data = google.visualization.arrayToDataTable([
-                    ['Status', 'Jumlah'],
-                    ['Hadir', hadir],
-                    ['Sakit', sakit],
-                    ['Izin', izin],
-                    ['Alpha', alpha]
+                    ['Status', 'Jumlah', { role: 'style' }, { role: 'annotation' }],
+                    ['Hadir', hadir, '#34D399', total > 0 ? `${(hadir/total*100).toFixed(0)}%` : '0%'],
+                    ['Sakit', sakit, '#F87171', total > 0 ? `${(sakit/total*100).toFixed(0)}%` : '0%'],
+                    ['Izin', izin, '#FBBF24', total > 0 ? `${(izin/total*100).toFixed(0)}%` : '0%'],
+                    ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
                 ]);
 
                 const isMobile = window.innerWidth < 768;
                 const options = {
-                    is3D: true,
-                    pieHole: 0.4,
+                    legend: { position: "none" },
                     backgroundColor: 'transparent',
-                    pieSliceText: isMobile ? 'percentage' : 'none',
-                    legend: { 
-                        position: isMobile ? 'bottom' : 'labeled',
-                        textStyle: { fontSize: 10 } 
-                    },
                     chartArea: {
-                        left: 5,
-                        top: 15,
-                        width: '90%',
-                        height: isMobile ? '75%' : '85%'
+                        width: '85%',
+                        height: '80%'
                     },
-                    colors: ['#34D399', '#F87171', '#FBBF24', '#9CA3AF']
+                    hAxis: {
+                        textStyle: { fontSize: isMobile ? 10 : 12 }
+                    },
+                    vAxis: {
+                        gridlines: { color: 'transparent' },
+                        format: '0'
+                    },
+                    annotations: {
+                        textStyle: {
+                            fontSize: 12,
+                            bold: true,
+                            color: '#333'
+                        },
+                        alwaysOutside: true
+                    },
                 };
                 
-                const chart = new google.visualization.PieChart(document.getElementById('overall-daily-teacher-pie-chart'));
+                const chart = new google.visualization.ColumnChart(document.getElementById('overall-daily-teacher-pie-chart'));
                 chart.draw(data, options);
-
-                // Render table
-                document.getElementById('overall-daily-teacher-table').innerHTML = createAbsenceTable(sakit, izin, alpha);
             }
 
             function renderOverallMonthlyTeacherPieChart() {
@@ -2148,39 +2205,43 @@
                         }
                     }
                 }
+                const total = hadir + sakit + izin + alpha;
 
                 const data = google.visualization.arrayToDataTable([
-                    ['Status', 'Jumlah'],
-                    ['Hadir', hadir],
-                    ['Sakit', sakit],
-                    ['Izin', izin],
-                    ['Alpha', alpha]
+                    ['Status', 'Jumlah', { role: 'style' }, { role: 'annotation' }],
+                    ['Hadir', hadir, '#3B82F6', total > 0 ? `${(hadir/total*100).toFixed(0)}%` : '0%'],
+                    ['Sakit', sakit, '#F87171', total > 0 ? `${(sakit/total*100).toFixed(0)}%` : '0%'],
+                    ['Izin', izin, '#FBBF24', total > 0 ? `${(izin/total*100).toFixed(0)}%` : '0%'],
+                    ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
                 ]);
-
+                
                 const isMobile = window.innerWidth < 768;
                 const options = {
-                    is3D: true,
-                    pieHole: 0.4,
+                    legend: { position: "none" },
                     backgroundColor: 'transparent',
-                    pieSliceText: isMobile ? 'percentage' : 'none',
-                    legend: { 
-                        position: isMobile ? 'bottom' : 'labeled',
-                        textStyle: { fontSize: 10 }
-                    },
                     chartArea: {
-                        left: 5,
-                        top: 15,
-                        width: '90%',
-                        height: isMobile ? '75%' : '85%'
+                        width: '85%',
+                        height: '80%'
                     },
-                    colors: ['#3B82F6', '#F87171', '#FBBF24', '#9CA3AF']
+                    hAxis: {
+                        textStyle: { fontSize: isMobile ? 10 : 12 }
+                    },
+                    vAxis: {
+                        gridlines: { color: 'transparent' },
+                        format: '0'
+                    },
+                    annotations: {
+                        textStyle: {
+                            fontSize: 12,
+                            bold: true,
+                            color: '#333'
+                        },
+                        alwaysOutside: true
+                    },
                 };
 
-                const chart = new google.visualization.PieChart(document.getElementById('overall-monthly-teacher-pie-chart'));
+                const chart = new google.visualization.ColumnChart(document.getElementById('overall-monthly-teacher-pie-chart'));
                 chart.draw(data, options);
-
-                // Render table
-                document.getElementById('overall-monthly-teacher-table').innerHTML = createAbsenceTable(sakit, izin, alpha);
             }
 
             function muatLaporanHarianSiswa(kelas = 'all') {
@@ -2478,3 +2539,4 @@
     </script>
 </body>
 </html>
+
