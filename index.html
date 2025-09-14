@@ -293,13 +293,13 @@
                     </div>
                 </div>
                  <div class="mt-8">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Hari Ini per Kelas</h2>
+                    <h2 id="summary-title-daily" class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Hari Ini per Kelas</h2>
                     <div id="per-class-charts-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Diagram per kelas akan dimuat di sini oleh JavaScript -->
                     </div>
                 </div>
                 <div class="mt-12">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Bulan Ini per Kelas</h2>
+                    <h2 id="summary-title-monthly" class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Ringkasan Kehadiran Bulan Ini per Kelas</h2>
                      <div id="monthly-per-class-charts-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Diagram bulanan per kelas akan dimuat di sini oleh JavaScript -->
                     </div>
@@ -308,11 +308,11 @@
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Siswa</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
+                            <h3 id="chart-title-student-daily" class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
                             <div id="overall-daily-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
+                            <h3 id="chart-title-student-monthly" class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
                             <div id="overall-monthly-pie-chart" style="width: 100%; height: 300px;"></div>
                         </div>
                     </div>
@@ -321,14 +321,14 @@
                     <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Grafik Kehadiran Guru</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
+                            <h3 id="chart-title-teacher-daily" class="text-lg font-semibold text-gray-800 mb-4 text-center">Hari Ini</h3>
                              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                                 <div id="overall-daily-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
                                 <div id="overall-daily-teacher-table"></div>
                             </div>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
+                            <h3 id="chart-title-teacher-monthly" class="text-lg font-semibold text-gray-800 mb-4 text-center">Bulan Ini</h3>
                              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                                 <div id="overall-monthly-teacher-pie-chart" style="width: 100%; height: 250px;"></div>
                                 <div id="overall-monthly-teacher-table"></div>
@@ -493,10 +493,10 @@
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                              <button id="laporan-harian-siswa-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600">
-                                Laporan Hari Ini (Siswa)
+                                Laporan Harian (Siswa)
                             </button>
                              <button id="laporan-harian-guru-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Laporan Hari Ini (Guru)
+                                Laporan Harian (Guru)
                             </button>
                             <button id="laporan-bulanan-siswa-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
                                 Rekap Bulanan Siswa
@@ -512,7 +512,7 @@
                 <div id="laporan-harian-siswa-content">
                     <div class="bg-white p-6 rounded-xl shadow-md">
                          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                             <h2 class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Siswa Hari Ini</h2>
+                             <h2 id="report-title-student-daily" class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Siswa Hari Ini</h2>
                              <div class="flex items-center">
                                 <label for="filter-kelas-laporan" class="text-sm font-medium mr-2">Filter Kelas:</label>
                                 <select id="filter-kelas-laporan" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -541,7 +541,7 @@
                 <!-- Daily Guru Report Content -->
                 <div id="laporan-harian-guru-content" class="hidden">
                     <div class="bg-white p-6 rounded-xl shadow-md">
-                         <h2 class="text-xl font-semibold mb-4 text-gray-800">Rekapitulasi Ketidakhadiran Guru Hari Ini</h2>
+                         <h2 id="report-title-teacher-daily" class="text-xl font-semibold mb-4 text-gray-800">Rekapitulasi Ketidakhadiran Guru Hari Ini</h2>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-green-600 text-white">
@@ -697,6 +697,59 @@
 
             // --- FUNGSI-FUNGSI ---
             
+            // Fungsi untuk mendapatkan tanggal hari ini dalam format yang bagus
+            function getTodayFormattedDate() {
+                return new Date().toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            // Fungsi untuk mendapatkan bulan dan tahun saat ini
+            function getCurrentMonthYear() {
+                return new Date().toLocaleDateString('id-ID', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            // Fungsi untuk memperbarui semua tampilan tanggal
+            function updateDateDisplays() {
+                const todayDate = getTodayFormattedDate();
+
+                // Beranda
+                const summaryTitle = document.getElementById('summary-title-daily');
+                if (summaryTitle) summaryTitle.textContent = `Ringkasan Kehadiran per Kelas - ${todayDate}`;
+                
+                const studentChartTitle = document.getElementById('chart-title-student-daily');
+                if (studentChartTitle) studentChartTitle.textContent = todayDate;
+                
+                const teacherChartTitle = document.getElementById('chart-title-teacher-daily');
+                if (teacherChartTitle) teacherChartTitle.textContent = todayDate;
+
+                // Laporan
+                const studentReportTitle = document.getElementById('report-title-student-daily');
+                if (studentReportTitle) studentReportTitle.textContent = `Rekapitulasi Ketidakhadiran Siswa - ${todayDate}`;
+                
+                const teacherReportTitle = document.getElementById('report-title-teacher-daily');
+                if (teacherReportTitle) teacherReportTitle.textContent = `Rekapitulasi Ketidakhadiran Guru - ${todayDate}`;
+            }
+
+            // Fungsi untuk memperbarui semua tampilan bulan-tahun
+            function updateMonthYearDisplays() {
+                const monthYear = getCurrentMonthYear();
+
+                const summaryTitle = document.getElementById('summary-title-monthly');
+                if (summaryTitle) summaryTitle.textContent = `Ringkasan Kehadiran per Kelas - ${monthYear}`;
+
+                const studentChartTitle = document.getElementById('chart-title-student-monthly');
+                if (studentChartTitle) studentChartTitle.textContent = monthYear;
+
+                const teacherChartTitle = document.getElementById('chart-title-teacher-monthly');
+                if (teacherChartTitle) teacherChartTitle.textContent = monthYear;
+            }
+
             // Fungsi untuk menampilkan jam dan tanggal realtime
             function updateClock() {
                 const now = new Date();
@@ -898,6 +951,8 @@
                 muatAbsensiGuru();
                 populateFilterKelas();
                 populateLaporanFilterKelas(); 
+                updateDateDisplays(); // Memperbarui tanggal
+                updateMonthYearDisplays(); // Memperbarui bulan-tahun
                 updateDashboardCards();
             }
             
@@ -995,12 +1050,6 @@
                 const selectedJabatan = jabatanLogin.value;
                 const guru = dataGuru.find(g => g.id == enteredId && g.id == selectedGuruId && g.jabatan === selectedJabatan);
 
-                if (!enteredId || !selectedGuruId || !selectedJabatan) {
-                loginError.querySelector('span').textContent = 'Semua field harus diisi.';
-                loginError.classList.remove('hidden');
-                return;
-                }
-                
                 if (guru) {
                     currentUserRole = guru.jabatan; 
                     loginScreen.classList.add('hidden');
@@ -2421,18 +2470,6 @@
                     const pageId = visiblePage.id.replace('-page', '');
                     renderChartsForPage(pageId);
                 }
-
-            // Tambahkan debounce untuk resize event
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-            const visiblePage = document.querySelector('.page:not(.hidden)');
-            if (visiblePage) {
-            const pageId = visiblePage.id.replace('-page', '');
-            renderChartsForPage(pageId);
-            }
-            }, 250);
             });
 
             // Inisialisasi aplikasi saat DOM siap
@@ -2441,4 +2478,3 @@
     </script>
 </body>
 </html>
-
