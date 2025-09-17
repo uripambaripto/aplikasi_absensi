@@ -71,6 +71,68 @@
         a, button, [data-page], [onclick], .menu-item, .cursor-pointer {
             cursor: pointer;
         }
+         /* Style untuk menonaktifkan input radio */
+        input[type="radio"]:disabled + span {
+            color: #9ca3af; /* Gray-400 */
+            cursor: not-allowed;
+        }
+         input[type="radio"]:disabled {
+            background-color: #e5e7eb; /* Gray-200 */
+            border-color: #d1d5db; /* Gray-300 */
+            cursor: not-allowed;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        .btn-success {
+            background-color: #16a34a;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+        .menu-item {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .menu-item:hover {
+            background-color: #eff6ff; /* blue-50 */
+            color: #1d4ed8; /* blue-700 */
+        }
+        .menu-item.active {
+            background-color: #1d4ed8;
+            color: white;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -239,6 +301,18 @@
             <div id="beranda-page" class="page">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Selamat Datang!</h1>
                 <p class="text-base text-gray-600 mb-8">Sistem Informasi Absensi Siswa SMP Diponegoro Sampang.</p>
+
+                <!-- Holiday Settings for Admin -->
+                <div id="holiday-settings-container" class="bg-white p-6 rounded-xl shadow-md mb-8 hidden">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Pengaturan Hari Libur Bulan Ini</h2>
+                    <p class="text-sm text-gray-500 mb-4">Pilih tanggal untuk ditetapkan sebagai hari libur. Semua absensi pada tanggal tersebut akan otomatis ditandai sebagai libur ("-").</p>
+                    <div class="overflow-x-auto">
+                        <table id="holiday-calendar-table" class="w-full border-collapse text-center">
+                            <!-- Kalender akan digenerate oleh JavaScript -->
+                        </table>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <div class="flex items-center space-x-4">
@@ -493,39 +567,40 @@
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Laporan Absensi</h1>
                 </div>
 
-                <!-- Tab-like navigation for reports -->
+                <!-- Tab navigation -->
                 <div id="laporan-nav-container" class="mb-6">
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                             <button id="laporan-harian-siswa-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600">
-                                Laporan Harian (Siswa)
+                             <button id="laporan-siswa-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600">
+                                Laporan Absensi Siswa
                             </button>
-                             <button id="laporan-harian-guru-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Laporan Harian (Guru)
-                            </button>
-                            <button id="laporan-bulanan-siswa-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Rekap Bulanan Siswa
-                            </button>
-                            <button id="laporan-bulanan-guru-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Rekap Bulanan Guru
+                             <button id="laporan-guru-tab" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Laporan Absensi Guru
                             </button>
                         </nav>
                     </div>
                 </div>
 
-                <!-- Daily Student Report Content -->
-                <div id="laporan-harian-siswa-content">
+                <!-- Student Report Content -->
+                <div id="laporan-siswa-content">
                     <div class="bg-white p-6 rounded-xl shadow-md">
                          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                             <h2 id="report-title-student-daily" class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Siswa Hari Ini</h2>
-                             <div class="flex items-center">
-                                <label for="filter-kelas-laporan" class="text-sm font-medium mr-2">Filter Kelas:</label>
-                                <select id="filter-kelas-laporan" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                     <option value="all">Semua Kelas</option>
-                                     <!-- Opsi kelas akan dimuat di sini -->
-                                </select>
-                            </div>
+                             <div>
+                                <h2 id="report-title-student-daily" class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Siswa Hari Ini</h2>
+                                <p class="text-sm text-gray-500 mt-1">Laporan ini menampilkan daftar siswa yang tidak hadir (Sakit, Izin, Alpha) pada hari ini.</p>
+                             </div>
+                             <button id="download-siswa-pdf" class="btn btn-primary">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Download PDF Bulanan</span>
+                            </button>
                          </div>
+                         <div class="flex items-center justify-end mb-4">
+                            <label for="filter-kelas-laporan" class="text-sm font-medium mr-2">Filter Kelas:</label>
+                            <select id="filter-kelas-laporan" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                 <option value="all">Semua Kelas</option>
+                                 <!-- Opsi kelas akan dimuat di sini -->
+                            </select>
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-green-600 text-white">
@@ -543,10 +618,19 @@
                     </div>
                 </div>
 
-                <!-- Daily Guru Report Content -->
-                <div id="laporan-harian-guru-content" class="hidden">
+                <!-- Guru Report Content -->
+                <div id="laporan-guru-content" class="hidden">
                     <div class="bg-white p-6 rounded-xl shadow-md">
-                         <h2 id="report-title-teacher-daily" class="text-xl font-semibold mb-4 text-gray-800">Rekapitulasi Ketidakhadiran Guru Hari Ini</h2>
+                         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                             <div>
+                                <h2 id="report-title-teacher-daily" class="text-xl font-semibold text-gray-800">Rekapitulasi Ketidakhadiran Guru Hari Ini</h2>
+                                 <p class="text-sm text-gray-500 mt-1">Laporan ini menampilkan daftar guru yang tidak hadir (Sakit, Izin, Alpha) pada hari ini.</p>
+                             </div>
+                             <button id="download-guru-pdf" class="btn btn-primary">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Download PDF Bulanan</span>
+                            </button>
+                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-green-600 text-white">
@@ -561,35 +645,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-
-
-                <!-- Siswa Monthly Report Content -->
-                <div id="laporan-bulanan-siswa-content" class="hidden">
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-xl font-semibold text-gray-800">Laporan Bulanan Siswa</h2>
-                            <button id="download-siswa-pdf" class="btn btn-primary flex items-center space-x-2">
-                                <i data-lucide="download" class="w-5 h-5"></i>
-                                <span>Download PDF Bulanan</span>
-                            </button>
-                        </div>
-                        <p class="mt-4 text-gray-600">Klik tombol download untuk mengunduh rekapitulasi absensi siswa selama bulan ini dalam format PDF (A4 Landscape). Data harian disimulasikan untuk tujuan demonstrasi.</p>
-                    </div>
-                </div>
-                
-                <!-- Guru Monthly Report Content -->
-                <div id="laporan-bulanan-guru-content" class="hidden">
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-xl font-semibold text-gray-800">Laporan Bulanan Guru</h2>
-                            <button id="download-guru-pdf" class="btn btn-primary flex items-center space-x-2">
-                                <i data-lucide="download" class="w-5 h-5"></i>
-                                <span>Download PDF Bulanan</span>
-                            </button>
-                        </div>
-                        <p class="mt-4 text-gray-600">Klik tombol download untuk mengunduh rekapitulasi absensi guru selama bulan ini dalam format PDF (A4 Landscape). Data harian disimulasikan untuk tujuan demonstrasi.</p>
                     </div>
                 </div>
             </div>
@@ -679,7 +734,7 @@
             
             // --- Google Apps Script URL ---
             // PENTING: Ganti dengan URL hasil deployment Google Apps Script Anda
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDT7RE7yxHyedg9X9NSIw714GnvZkpZaqI3duxLFZu4CuDcbOLvG2_vQxiqAEiUXxt_Q/exec'; // <-- PASTE URL ANDA DI SINI
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgelHi8R9wOkXok_TiOHhENP0Q9j23U6_TTe3CQygEKM0rzBR316x_9dYlkeCO3J5_pA/exec'; // <-- PASTE URL ANDA DI SINI
 
             // --- DATA LOKAL (sebagai cache) ---
             let dataGuru = [];
@@ -688,6 +743,7 @@
             let rekapGuru = [];
             let guruPendingChanges = [];
             let siswaPendingChanges = [];
+            let manualHolidays = new Set(); // Set untuk menyimpan hari libur yang diatur manual
 
             // --- ELEMEN DOM ---
             const loginScreen = document.getElementById('login-screen');
@@ -701,6 +757,54 @@
             let currentUserRole = null; // Menyimpan jabatan pengguna yang login
 
             // --- FUNGSI-FUNGSI ---
+
+            // Fungsi untuk menginisialisasi hari libur manual dari data rekap
+            function initializeManualHolidays() {
+                manualHolidays.clear();
+                if (!rekapSiswa || rekapSiswa.length < 2) return;
+
+                const headers = rekapSiswa[0];
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth() + 1;
+
+                for (let day = 1; day <= 31; day++) {
+                    const dateColumnIndex = headers.indexOf(day) > -1 ? headers.indexOf(day) : headers.indexOf(String(day));
+                    if (dateColumnIndex > -1) {
+                        // Cek jika semua status di hari itu adalah '-'
+                        const isDayOffForAll = rekapSiswa.slice(1).every(row => row[dateColumnIndex] === '-');
+                        if (isDayOffForAll) {
+                            manualHolidays.add(`${year}-${month}-${day}`);
+                        }
+                    }
+                }
+            }
+
+
+            // Fungsi untuk mengecek hari libur (Sabtu, Minggu, Libur Nasional, dan Manual)
+            function isHoliday(date) {
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1; // getMonth() is 0-indexed
+                const day = date.getDate();
+                const dayOfWeek = date.getDay();
+
+                // Cek akhir pekan
+                if (dayOfWeek === 0 || dayOfWeek === 6) return true;
+
+                // Cek libur nasional
+                const nationalHolidays = [
+                    '2025-1-1', '2025-1-27', '2025-1-29', '2025-3-29', '2025-3-31', 
+                    '2025-4-1', '2025-4-18', '2025-5-1', '2025-5-12', '2025-5-29', 
+                    '2025-6-1', '2025-6-7', '2025-6-27', '2025-8-17', '2025-9-5', '2025-12-25'
+                ];
+                const dateStringYMD = `${year}-${month}-${day}`;
+                if (nationalHolidays.includes(dateStringYMD)) return true;
+                
+                // Cek libur manual
+                if (manualHolidays.has(dateStringYMD)) return true;
+
+                return false;
+            }
             
             // Fungsi untuk mendapatkan tanggal hari ini dalam format yang bagus
             function getTodayFormattedDate() {
@@ -717,6 +821,12 @@
                     month: 'long',
                     year: 'numeric'
                 });
+            }
+
+            function isLastDayOfMonth(date = new Date()) {
+                const tomorrow = new Date(date);
+                tomorrow.setDate(date.getDate() + 1);
+                return tomorrow.getDate() === 1;
             }
 
             // Fungsi untuk memperbarui semua tampilan tanggal
@@ -809,12 +919,12 @@
             }
             
             // Fungsi untuk mengirim data ke Google Apps Script
-            async function postData(payload) {
+            async function postData(payload, showLoader = true) {
                  if (!SCRIPT_URL) {
                     alert("Aksi tidak dapat dilanjutkan karena URL Google Apps Script belum diatur. Silakan perbarui file HTML Anda.");
                     return false;
                 }
-                showLoading('Menyimpan data...');
+                if (showLoader) showLoading('Menyimpan data...');
                 try {
                     const response = await fetch(SCRIPT_URL, {
                         method: 'POST',
@@ -834,10 +944,11 @@
                     return true;
                 } catch (error) {
                     console.error('Error posting data:', error);
+                    // Selalu tampilkan notifikasi jika gagal, bahkan untuk proses latar belakang
                     alert('Gagal menyimpan data ke server: ' + error.message);
                     return false;
                 } finally {
-                    hideLoading();
+                    if (showLoader) hideLoading();
                 }
             }
 
@@ -850,101 +961,115 @@
                     renderChartsForPage(pageId);
                 }
             }
+            
+            // --- Fungsi Auto-Refresh dan Inisialisasi ---
+            async function fetchDataAndUpdate(isInitialLoad = false) {
+                if (isInitialLoad) {
+                    showLoading('Mengambil data awal...');
+                }
 
-            // Inisialisasi Aplikasi
-            async function init() {
-                updateClock(); // Panggil sekali saat load
-                updatePlaceholders();
-                showLoading('Mengambil data awal...');
                 if (!SCRIPT_URL) {
-                     alert("PENTING: URL Google Apps Script belum diatur. Silakan ikuti file instructions.md dan paste URL Anda di dalam file HTML ini.");
-                     // Mengisi dengan data dummy jika URL tidak ada, agar aplikasi tetap bisa dilihat
-                     generateDummyData();
-                     hideLoading();
-                } else {
-                    try {
-                        const response = await fetch(SCRIPT_URL, { redirect: 'follow' });
-                        const data = await response.json();
+                    if (isInitialLoad) {
+                        alert("PENTING: URL Google Apps Script belum diatur. Silakan ikuti file instructions.md dan paste URL Anda di dalam file HTML ini.");
+                        generateDummyData();
+                        refreshUI();
+                        hideLoading();
+                    }
+                    return;
+                }
+
+                try {
+                    const response = await fetch(SCRIPT_URL, { redirect: 'follow', cache: 'no-cache' });
+                    const data = await response.json();
+                    
+                    if (data.status === 'error') {
+                        throw new Error(data.message);
+                    }
+
+                    const hasDataChanged = JSON.stringify(dataSiswa) !== JSON.stringify(data.siswa) ||
+                                           JSON.stringify(dataGuru) !== JSON.stringify(data.guru) ||
+                                           JSON.stringify(rekapSiswa) !== JSON.stringify(data.rekapSiswa) ||
+                                           JSON.stringify(rekapGuru) !== JSON.stringify(data.rekapGuru);
+
+                    if (hasDataChanged || isInitialLoad) {
                         dataGuru = data.guru;
                         dataSiswa = data.siswa;
                         rekapSiswa = data.rekapSiswa || [];
                         rekapGuru = data.rekapGuru || [];
-                    } catch (error) {
-                         console.error("Gagal mengambil data awal:", error);
-                         alert("Gagal mengambil data dari Google Sheets. Pastikan URL skrip Anda benar dan sudah di-deploy dengan benar (akses diatur ke 'Anyone').");
-                         generateDummyData();
-                    } finally {
+
+                        if (isInitialLoad) {
+                            console.log("Data awal berhasil dimuat.");
+                            initializeManualHolidays(); // Inisialisasi hari libur dari data
+                            refreshUI(); 
+                        } else {
+                            console.log("Data terdeteksi berubah, melakukan refresh otomatis...");
+                            const visiblePageId = document.querySelector('.page:not(.hidden)')?.id;
+                            
+                            if (visiblePageId === 'beranda-page') {
+                                updateDashboardCards();
+                                renderChartsForPage('beranda');
+                            } else if (visiblePageId === 'absensi-page') {
+                                muatAbsensiSiswa(document.getElementById('filter-kelas').value);
+                            } else if (visiblePageId === 'absensi-guru-page') {
+                                muatAbsensiGuru();
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("Gagal mengambil data untuk refresh:", error);
+                    if (isInitialLoad) {
+                        alert("Gagal mengambil data dari Google Sheets. Menggunakan data dummy. Error: " + error.message);
+                        generateDummyData();
+                        refreshUI();
+                    }
+                } finally {
+                    if (isInitialLoad) {
                         hideLoading();
                     }
                 }
+            }
+
+            async function init() {
+                updateClock();
+                updatePlaceholders();
+                
+                await fetchDataAndUpdate(true);
                 
                 loadSavedImages();
-                refreshUI();
                 setupEventListeners();
                 lucide.createIcons();
+
+                setInterval(() => fetchDataAndUpdate(false), 30000); 
+                console.log("Auto-refresh diaktifkan setiap 30 detik.");
             }
 
             function generateDummyData(){
                 dataGuru = [
-                    {id: 1, nama: 'Ahmad Mutasir', jabatan: 'Kepala Sekolah'},
-                    {id: 8, nama: 'Ina Solikhati', jabatan: 'Wakil Kepala Sekolah'},
-                    {id: 7, nama: 'Urip Ambaripto', jabatan: 'Administrator'},
-                    {id: 2, nama: 'Arief Kurniawan', jabatan: 'Guru Piket'},
-                    {id: 3, nama: 'Salsabila Nur Anisa', jabatan: 'Guru Piket'},
-                    {id: 4, nama: 'Heni Faridanti Auni', jabatan: 'Guru Piket'},
-                    {id: 5, nama: 'Isti Kharirotun Nangimah', jabatan: 'Guru Piket'},
-                    {id: 6, nama: 'Mukhammad Mukhamim', jabatan: 'Guru Piket'},
-                    {id: 21, nama: 'Nuryati', jabatan: 'TENDIK'},
-                    {id: 22, nama: 'Fadliyah', jabatan: 'TENDIK'},
-                    {id: 23, nama: 'Nuryati (2)', jabatan: 'TENDIK'},
-                    {id: 24, nama: 'Deka Ponco N', jabatan: 'TENDIK'},
-                    {id: 25, nama: 'Akmal Khoirul Riyadi', jabatan: 'TENDIK'},
-                    {id: 26, nama: 'Saefulloh', jabatan: 'TENDIK'},
-                    {id: 27, nama: 'Suyeni', jabatan: 'TENDIK'},
-                    {id: 9, nama: 'Mukhlison', jabatan: 'PTK'},
-                    {id: 10, nama: 'Warsito', jabatan: 'PTK'},
-                    {id: 11, nama: 'Ali Sadikin', jabatan: 'PTK'},
-                    {id: 12, nama: 'Syihabudin', jabatan: 'PTK'},
-                    {id: 13, nama: 'Nurkhalimah', jabatan: 'PTK'},
-                    {id: 14, nama: 'Oktina Laili Hidayah', jabatan: 'PTK'},
-                    {id: 15, nama: 'Musngidul Umam', jabatan: 'PTK'},
-                    {id: 16, nama: 'Atin Septiasari', jabatan: 'PTK'},
-                    {id: 17, nama: 'Selvi Wulan Sari', jabatan: 'PTK'},
-                    {id: 18, nama: 'Putri Lailatus S', jabatan: 'PTK'},
-                    {id: 19, nama: 'Robi I', jabatan: 'PTK'},
-                    {id: 20, nama: 'Catur Andi K', jabatan: 'PTK'},
-                    {id: 28, nama: 'Tuslam', jabatan: 'TENDIK'}
+                    {id: 1, nama: 'Ahmad Mutasir', jabatan: 'Kepala Sekolah', status: 'Hadir'},
+                    {id: 8, nama: 'Ina Solikhati', jabatan: 'Wakil Kepala Sekolah', status: 'Hadir'},
+                    {id: 7, nama: 'Urip Ambaripto', jabatan: 'Administrator', status: 'Hadir'},
+                    {id: 2, nama: 'Arief Kurniawan', jabatan: 'Guru Piket', status: 'Hadir'},
+                    {id: 3, nama: 'Salsabila Nur Anisa', jabatan: 'Guru Piket', status: 'Hadir'},
+                    {id: 4, nama: 'Heni Faridanti Auni', jabatan: 'Guru Piket', status: 'Sakit'},
+                    {id: 5, nama: 'Isti Kharirotun Nangimah', jabatan: 'Guru Piket', status: 'Hadir'},
+                    {id: 6, nama: 'Mukhammad Mukhamim', jabatan: 'Guru Piket', status: 'Hadir'},
                 ];
 
-                const firstNames = ["Budi", "Adi", "Eka", "Dwi", "Tri", "Catur", "Panca", "Sita", "Dewi", "Putri", "Agus", "Ahmad", "Siti", "Nur", "Rahmat", "Hidayat", "Joko", "Sri", "Wahyu", "Indah", "Rizki", "Zainal", "Fitri", "Lia", "Fajar", "Gilang", "Hafiz", "Irfan"];
-                const lastNames = ["Santoso", "Wijaya", "Kusumo", "Pratama", "Nugroho", "Lestari", "Wati", "Setiawan", "Halim", "Susanto", "Rahayu", "Purnomo", "Wibowo", "Saputra", "Utami", "Maulana", "Hakim", "Gunawan"];
-                const generateStudents = (kelas, startNis, count) => {
-                    const students = [];
-                    for (let i = 0; i < count; i++) {
-                        const nis = String(startNis + i);
-                        const nisn = "00" + String(Math.floor(Math.random() * 90000000) + 10000000);
-                        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-                        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-                        students.push({ nis, nisn, nama: `${firstName} ${lastName}`, kelas });
-                    }
-                    return students;
-                };
-
-                let allStudents = [];
-                let currentNis = 2000;
-                const studentsPerClass = 32;
-
-                ['VII A', 'VII B', 'VII C', 'VII D'].forEach(k => { allStudents.push(...generateStudents(k, currentNis, studentsPerClass)); currentNis += studentsPerClass; });
-                ['VIII A', 'VIII B', 'VIII C'].forEach(k => { allStudents.push(...generateStudents(k, currentNis, studentsPerClass)); currentNis += studentsPerClass; });
-                ['IX A', 'IX B', 'IX C', 'IX D'].forEach(k => { allStudents.push(...generateStudents(k, currentNis, studentsPerClass)); currentNis += studentsPerClass; });
-                dataSiswa = allStudents;
+                dataSiswa = [
+                    {nis: '1001', nisn: '001', nama: 'Budi Santoso', kelas: 'VII A', status: 'Hadir'},
+                    {nis: '1002', nisn: '002', nama: 'Adi Wijaya', kelas: 'VII A', status: 'Sakit'},
+                    {nis: '1003', nisn: '003', nama: 'Sita Lestari', kelas: 'VII B', status: 'Izin'},
+                    {nis: '1004', nisn: '004', nama: 'Dewi Wati', kelas: 'VII B', status: 'Alpha'},
+                    {nis: '1005', nisn: '005', nama: 'Joko Susanto', kelas: 'IX A', status: 'Hadir'},
+                ];
                 rekapSiswa = [
-                    ['NIS', 'Nama', 'Kelas', '1', '2', '3'],
-                    ['2000', 'Budi Santoso', 'VII A', 'H', 'H', 'S']
+                    ['NIS', 'Nama', 'Kelas', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 'Jumlah H', 'Jumlah S', 'Jumlah I', 'Jumlah A'],
+                    ['1001', 'Budi Santoso', 'VII A', 'H','H','H','H','H','-','-','H','H','H','H','H','-','-','H','S','H','H','H','-','-','H','H','H','H','H','-','-','H', 22, 1, 0, 0],
+                    ['1002', 'Adi Wijaya', 'VII A', 'H','H','S','H','H','-','-','H','H','H','H','H','-','-','H','H','H','H','H','-','-','H','H','I','H','H','-','-','H', 21, 1, 1, 0]
                 ];
                 rekapGuru = [
-                    ['ID', 'Nama', 'Jabatan', '1', '2', '3'],
-                    ['1', 'Ahmad Mutasir', 'Kepala Sekolah', 'H', 'H', 'I']
+                    ['ID', 'Nama', 'Jabatan', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 'Jumlah H', 'Jumlah S', 'Jumlah I', 'Jumlah A'],
+                    [1, 'Ahmad Mutasir', 'Kepala Sekolah', 'H','H','H','H','H','-','-','H','H','H','H','H','-','-','H','H','H','H','H','-','-','H','I','H','H','H','-','-','H', 22, 0, 1, 0]
                 ];
             }
             
@@ -960,6 +1085,7 @@
                 updateDateDisplays(); // Memperbarui tanggal
                 updateMonthYearDisplays(); // Memperbarui bulan-tahun
                 updateDashboardCards();
+                updateUIForRole(); // Pastikan UI peran diperbarui setelah semua data siap
             }
             
             // Load saved images from localStorage
@@ -1099,6 +1225,7 @@
                 const isKS_WKS = currentUserRole === 'Kepala Sekolah' || currentUserRole === 'Wakil Kepala Sekolah';
                 const isAdmin = currentUserRole === 'Administrator';
                 const isLoggedIn = !!currentUserRole;
+                const isTodayHoliday = isHoliday(new Date());
 
                 appNav.classList.toggle('hidden', !isLoggedIn);
                 mobileMenuContainer.classList.toggle('hidden', !isLoggedIn);
@@ -1109,12 +1236,18 @@
 
                 [menuPiket, menuKS, menuAdmin].forEach(el => el.style.display = 'none');
 
-                if (isPiket) {
-                    menuPiket.style.display = 'contents';
-                } else if (isKS_WKS) {
-                    menuKS.style.display = 'contents';
-                } else if (isAdmin) {
-                    menuAdmin.style.display = 'contents';
+                if (isTodayHoliday) {
+                    // Jika hari ini libur, sembunyikan semua menu absensi
+                    console.log("Hari ini libur, menu absensi disembunyikan.");
+                } else {
+                    // Tampilkan menu absensi yang sesuai jika bukan hari libur
+                    if (isPiket) {
+                        menuPiket.style.display = 'contents';
+                    } else if (isKS_WKS) {
+                        menuKS.style.display = 'contents';
+                    } else if (isAdmin) {
+                        menuAdmin.style.display = 'contents';
+                    }
                 }
 
                 // Hide/show data management menus
@@ -1122,25 +1255,59 @@
                 const menuDataSiswa = document.getElementById('menu-data-siswa-container');
                 const mobileMenuGuru = document.getElementById('mobile-menu-guru');
                 const mobileMenuDataSiswa = document.getElementById('mobile-menu-data-siswa');
+                const mobileMenuAbsenSiswa = document.querySelector('#mobile-menu a[data-page="absensi"]');
+                const mobileMenuAbsenGuru = document.querySelector('#mobile-menu a[data-page="absensi-guru"]');
 
                 if(menuDataGuru) menuDataGuru.style.display = isAdmin ? 'contents' : 'none';
                 if(menuDataSiswa) menuDataSiswa.style.display = isAdmin ? 'contents' : 'none';
                 if(mobileMenuGuru) mobileMenuGuru.style.display = isAdmin ? 'block' : 'none';
                 if(mobileMenuDataSiswa) mobileMenuDataSiswa.style.display = isAdmin ? 'block' : 'none';
 
+                // Sembunyikan menu absensi mobile jika hari libur
+                 if (mobileMenuAbsenSiswa) mobileMenuAbsenSiswa.style.display = isTodayHoliday ? 'none' : 'block';
+                 if (mobileMenuAbsenGuru) mobileMenuAbsenGuru.style.display = (isTodayHoliday || isPiket) ? 'none' : 'block';
+
                 const grafikGuruContainer = document.getElementById('grafik-guru-container');
                 if (grafikGuruContainer) {
                     grafikGuruContainer.style.display = isPiket ? 'none' : '';
                 }
 
-                const laporanGuruTab = document.getElementById('laporan-bulanan-guru-tab');
-                if(laporanGuruTab) {
-                    laporanGuruTab.style.display = isPiket ? 'none' : '';
+                const laporanGuruTab = document.getElementById('laporan-guru-tab');
+                if (laporanGuruTab) {
+                    // Administrator, Kepala Sekolah, dan Wakil Kepala Sekolah dapat melihat laporan guru.
+                    if (isPiket) {
+                        laporanGuruTab.style.display = 'none';
+                    } else {
+                        laporanGuruTab.style.display = '';
+                    }
                 }
 
-                const laporanHarianGuruTab = document.getElementById('laporan-harian-guru-tab');
-                if(laporanHarianGuruTab) {
-                    laporanHarianGuruTab.style.display = isPiket ? 'none' : '';
+                // PDF Download Button Logic
+                const downloadSiswaBtn = document.getElementById('download-siswa-pdf');
+                const downloadGuruBtn = document.getElementById('download-guru-pdf');
+                const isLastDay = isLastDayOfMonth();
+
+                if (downloadSiswaBtn && downloadGuruBtn) {
+                    if (isAdmin || isLastDay) {
+                        downloadSiswaBtn.disabled = false;
+                        downloadGuruBtn.disabled = false;
+                        downloadSiswaBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        downloadGuruBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        downloadSiswaBtn.title = 'Unduh rekapitulasi absensi siswa bulan ini.';
+                        downloadGuruBtn.title = 'Unduh rekapitulasi absensi guru bulan ini.';
+                    } else {
+                        downloadSiswaBtn.disabled = true;
+                        downloadGuruBtn.disabled = true;
+                        downloadSiswaBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        downloadGuruBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        downloadSiswaBtn.title = 'Tombol download PDF bulanan hanya aktif pada akhir bulan.';
+                        downloadGuruBtn.title = 'Tombol download PDF bulanan hanya aktif pada akhir bulan.';
+                    }
+                }
+
+                // Jika pengguna adalah Guru Piket dan tab guru sedang aktif, pindah ke tab siswa
+                if (isPiket && !document.getElementById('laporan-guru-content').classList.contains('hidden')) {
+                    document.getElementById('laporan-siswa-tab').click();
                 }
 
 
@@ -1175,7 +1342,10 @@
                     muatLaporanHarianSiswa();
                     muatLaporanHarianGuru();
                     // Reset to the first tab
-                    document.getElementById('laporan-harian-siswa-tab').click();
+                    const siswaTab = document.getElementById('laporan-siswa-tab');
+                    if (siswaTab) {
+                        siswaTab.click();
+                    }
                 } else if (pageId === 'beranda') {
                     updateDashboardCards();
                     renderPerClassCharts();
@@ -1220,7 +1390,6 @@
                 const tabelBody = document.getElementById('tabel-data-siswa');
                 const selectAllCheckbox = document.getElementById('select-all-siswa');
                 
-                // Cek jika elemen tabelBody ada sebelum memanipulasinya
                 if (!tabelBody) {
                     console.error("Elemen dengan ID 'tabel-data-siswa' tidak ditemukan.");
                     return;
@@ -1259,33 +1428,54 @@
             async function muatAbsensiSiswa(kelas = 'all') {
                 const tabelBody = document.getElementById('tabel-absensi-siswa');
                 tabelBody.innerHTML = '';
+
+                const today = new Date();
+                const isTodayHoliday = isHoliday(today);
+
+                if (isTodayHoliday) {
+                    tabelBody.innerHTML = `<tr><td colspan="5" class="text-center p-6 bg-yellow-50 text-yellow-800 font-medium">Hari ini adalah hari libur. Absensi dinonaktifkan.</td></tr>`;
+                    return;
+                }
+                
                 const filteredSiswa = (kelas === 'all') ? dataSiswa : dataSiswa.filter(s => s.kelas === kelas);
+                const currentDay = today.getDate();
+                const headers = (rekapSiswa && rekapSiswa.length > 0) ? rekapSiswa[0] : [];
+                const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+
+                const rekapSiswaMap = new Map();
+                if (rekapSiswa.length > 1) {
+                    rekapSiswa.slice(1).forEach(row => rekapSiswaMap.set(String(row[0]), row));
+                }
 
                 filteredSiswa.forEach((siswa, index) => {
-                    if (!siswa.status) siswa.status = 'Hadir';
+                    let currentStatus = 'Hadir';
+                    if (dateColumnIndex !== -1 && rekapSiswaMap.has(String(siswa.nis))) {
+                        currentStatus = rekapSiswaMap.get(String(siswa.nis))[dateColumnIndex] || 'Hadir';
+                    } else {
+                        currentStatus = siswa.status || 'Hadir';
+                    }
 
                     const radioGroupName = `status-${siswa.nis}`;
-                    const statuses = ['Hadir', 'Sakit', 'Izin', 'Alpha'];
-                    const radioButtons = statuses.map(status => `
-                        <label class="inline-flex items-center mr-4">
-                            <input type="radio" name="${radioGroupName}" value="${status}" data-nis="${siswa.nis}" class="attendance-radio form-radio h-4 w-4 text-blue-600" ${siswa.status === status ? 'checked' : ''}>
-                            <span class="ml-2 text-sm">${status}</span>
+                    const statuses = [
+                        { value: 'Hadir', label: 'H' },
+                        { value: 'Sakit', label: 'S' },
+                        { value: 'Izin', label: 'I' },
+                        { value: 'Alpha', label: 'A' }
+                    ];
+                    const radioButtons = statuses.map(statusInfo => `
+                        <label class="inline-flex items-center mr-4" title="${statusInfo.value}">
+                            <input type="radio" name="${radioGroupName}" value="${statusInfo.value}" data-nis="${siswa.nis}" class="attendance-radio form-radio h-4 w-4 text-blue-600" ${statusInfo.value.toUpperCase().startsWith(String(currentStatus).toUpperCase()) ? 'checked' : ''}>
+                            <span class="ml-2 text-sm font-semibold w-4 text-center">${statusInfo.label}</span>
                         </label>
                     `).join('');
 
-                    const rowClass = index % 2 === 0 ? 'bg-white' : 'bg-green-50';
-
                     tabelBody.innerHTML += `
-                        <tr class="${rowClass}">
+                        <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-green-50'}">
                             <td class="p-3">${siswa.nis}</td>
                             <td class="p-3">${siswa.nisn}</td>
                             <td class="p-3 font-medium text-gray-800">${siswa.nama}</td>
                             <td class="p-3 text-gray-600">${siswa.kelas}</td>
-                            <td class="p-3">
-                                <div class="flex items-center">
-                                    ${radioButtons}
-                                </div>
-                            </td>
+                            <td class="p-3"><div class="flex items-center">${radioButtons}</div></td>
                         </tr>
                     `;
                 });
@@ -1295,31 +1485,52 @@
             function muatAbsensiGuru() {
                 const tabelBody = document.getElementById('tabel-absensi-guru');
                 tabelBody.innerHTML = '';
+                
+                const today = new Date();
+                const isTodayHoliday = isHoliday(today);
+
+                if (isTodayHoliday) {
+                    tabelBody.innerHTML = `<tr><td colspan="4" class="text-center p-6 bg-yellow-50 text-yellow-800 font-medium">Hari ini adalah hari libur. Absensi dinonaktifkan.</td></tr>`;
+                    return;
+                }
+                
+                const currentDay = today.getDate();
+                const headers = (rekapGuru && rekapGuru.length > 0) ? rekapGuru[0] : [];
+                const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+
+                const rekapGuruMap = new Map();
+                if (rekapGuru.length > 1) {
+                    rekapGuru.slice(1).forEach(row => rekapGuruMap.set(String(row[0]), row));
+                }
 
                 dataGuru.forEach((guru, index) => {
-                    if (!guru.status) guru.status = 'Hadir';
+                    let currentStatus = 'Hadir';
+                    if (dateColumnIndex !== -1 && rekapGuruMap.has(String(guru.id))) {
+                        currentStatus = rekapGuruMap.get(String(guru.id))[dateColumnIndex] || 'Hadir';
+                    } else {
+                        currentStatus = guru.status || 'Hadir';
+                    }
 
                     const radioGroupName = `status-guru-${guru.id}`;
-                    const statuses = ['Hadir', 'Sakit', 'Izin', 'Alpha'];
-                    const radioButtons = statuses.map(status => `
-                        <label class="inline-flex items-center mr-4">
-                            <input type="radio" name="${radioGroupName}" value="${status}" data-id="${guru.id}" class="attendance-radio-guru form-radio h-4 w-4 text-blue-600" ${guru.status === status ? 'checked' : ''}>
-                            <span class="ml-2 text-sm">${status}</span>
+                    const statuses = [
+                        { value: 'Hadir', label: 'H' },
+                        { value: 'Sakit', label: 'S' },
+                        { value: 'Izin', label: 'I' },
+                        { value: 'Alpha', label: 'A' }
+                    ];
+                    const radioButtons = statuses.map(statusInfo => `
+                        <label class="inline-flex items-center mr-4" title="${statusInfo.value}">
+                            <input type="radio" name="${radioGroupName}" value="${statusInfo.value}" data-id="${guru.id}" class="attendance-radio-guru form-radio h-4 w-4 text-blue-600" ${statusInfo.value.toUpperCase().startsWith(String(currentStatus).toUpperCase()) ? 'checked' : ''}>
+                            <span class="ml-2 text-sm font-semibold w-4 text-center">${statusInfo.label}</span>
                         </label>
                     `).join('');
 
-                    const rowClass = index % 2 === 0 ? 'bg-white' : 'bg-green-50';
-
                     tabelBody.innerHTML += `
-                        <tr class="${rowClass}">
+                        <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-green-50'}">
                             <td class="p-3">${index + 1}</td>
                             <td class="p-3 font-medium text-gray-800">${guru.nama}</td>
                             <td class="p-3 text-gray-600">${guru.jabatan}</td>
-                            <td class="p-3">
-                                <div class="flex items-center">
-                                    ${radioButtons}
-                                </div>
-                            </td>
+                            <td class="p-3"><div class="flex items-center">${radioButtons}</div></td>
                         </tr>
                     `;
                 });
@@ -1367,40 +1578,48 @@
                     const json = XLSX.utils.sheet_to_json(worksheet);
 
                     try {
+                        let changes = [];
                         if (type === 'guru') {
-                            for (const row of json) {
+                            json.forEach(row => {
                                 if (row['Nama Guru'] && row['Jabatan']) {
-                                    const newGuru = {
-                                        id: Date.now() + Math.random(),
-                                        nama: row['Nama Guru'],
-                                        jabatan: row['Jabatan'],
-                                        status: 'Hadir'
-                                    };
-                                    await postData({ action: 'addGuru', data: newGuru });
-                                    dataGuru.push(newGuru);
+                                    changes.push({ 
+                                        action: 'addGuru', 
+                                        data: {
+                                            id: Date.now() + Math.random(),
+                                            nama: row['Nama Guru'],
+                                            jabatan: row['Jabatan'],
+                                        }
+                                    });
                                 }
-                            }
+                            });
                         } else if (type === 'siswa') {
-                            for (const row of json) {
-                                if (row['NIS'] && row['Nama'] && row['Kelas']) {
-                                    const newSiswa = {
-                                        nis: String(row['NIS']),
-                                        nisn: String(row['NISN'] || ''),
-                                        nama: row['Nama'],
-                                        kelas: row['Kelas'],
-                                        status: 'Hadir'
-                                    };
-                                    if (!dataSiswa.some(s => s.nis === newSiswa.nis)) {
-                                        await postData({ action: 'addSiswa', data: newSiswa });
-                                        dataSiswa.push(newSiswa);
-                                    }
+                             json.forEach(row => {
+                                if (row['NIS'] && row['Nama Siswa'] && row['Kelas'] && !dataSiswa.some(s => s.nis == row['NIS'])) {
+                                    changes.push({
+                                        action: 'addSiswa',
+                                        data: {
+                                            nis: String(row['NIS']),
+                                            nisn: String(row['NISN'] || ''),
+                                            nama: row['Nama Siswa'],
+                                            kelas: row['Kelas'],
+                                        }
+                                    });
                                 }
-                            }
+                            });
                         }
-                        alert('Data berhasil diimpor!');
-                        refreshUI();
+                        
+                        if (changes.length > 0) {
+                            const success = await postData({ action: 'processBulkDataChanges', changes: changes });
+                            if (success) {
+                                alert(`${changes.length} data baru berhasil diimpor! Data akan diperbarui.`);
+                                fetchDataAndUpdate(true); // Fetch all data again to ensure sync
+                            }
+                        } else {
+                            alert('Tidak ada data baru untuk diimpor atau data sudah ada (berdasarkan NIS).');
+                        }
+
                     } catch (error) {
-                        alert('Gagal mengimpor data. Pastikan format kolom file Excel Anda benar.\nUntuk Guru: "Nama Guru", "Jabatan".\nUntuk Siswa: "NIS", "NISN", "Nama", "Kelas".');
+                        alert('Gagal mengimpor data. Pastikan format kolom file Excel Anda benar.\nUntuk Guru: "Nama Guru", "Jabatan".\nUntuk Siswa: "NIS", "NISN", "Nama Siswa", "Kelas".');
                         console.error("Error parsing Excel file:", error);
                     }
                 };
@@ -1487,15 +1706,30 @@
                     if (e.target.classList.contains('attendance-radio')) {
                         const nis = e.target.dataset.nis;
                         const status = e.target.value;
-                        const siswa = dataSiswa.find(s => s.nis === nis);
-                        if(siswa && siswa.status !== status) {
-                           const success = await postData({ action: 'updateSiswaStatus', nis, status });
-                           if(success) {
-                                siswa.status = status;
-                                if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
-                                    renderChartsForPage('beranda');
+                        
+                        const success = await postData({ action: 'updateSiswaStatus', nis, status });
+                        if(success) {
+                            // Update cache data master lokal
+                            const siswa = dataSiswa.find(s => s.nis === nis);
+                            if (siswa) siswa.status = status;
+                            
+                            const today = new Date().getDate();
+                            const headers = (rekapSiswa && rekapSiswa.length > 0) ? rekapSiswa[0] : [];
+                            const dateColumnIndex = headers.indexOf(today) > -1 ? headers.indexOf(today) : headers.indexOf(String(today));
+
+                            if (dateColumnIndex !== -1) {
+                                const rekapRowIndex = rekapSiswa.findIndex(row => String(row[0]) === String(nis));
+                                if (rekapRowIndex > 0) {
+                                    rekapSiswa[rekapRowIndex][dateColumnIndex] = status.charAt(0).toUpperCase();
                                 }
-                           }
+                            }
+                            // Refresh dasbor untuk update grafik secara realtime
+                            if(!document.getElementById('beranda-page').classList.contains('hidden')) {
+                                renderChartsForPage('beranda');
+                            }
+                        } else {
+                            // Jika gagal, muat ulang data absensi untuk mengembalikan ke status semula
+                            muatAbsensiSiswa(document.getElementById('filter-kelas').value);
                         }
                     }
                 });
@@ -1504,32 +1738,46 @@
                     if (e.target.classList.contains('attendance-radio-guru')) {
                         const id = e.target.dataset.id;
                         const status = e.target.value;
-                        const guru = dataGuru.find(g => g.id == id);
-                        if(guru && guru.status !== status) {
-                           const success = await postData({ action: 'updateGuruStatus', id, status });
-                           if (success) {
-                                guru.status = status;
-                                if(document.getElementById('beranda-page').classList.contains('hidden') === false) {
-                                    renderChartsForPage('beranda');
+                        
+                        const success = await postData({ action: 'updateGuruStatus', id, status });
+                        if (success) {
+                            const guru = dataGuru.find(g => g.id == id);
+                            if (guru) guru.status = status;
+
+                            const today = new Date().getDate();
+                            const headers = (rekapGuru && rekapGuru.length > 0) ? rekapGuru[0] : [];
+                            const dateColumnIndex = headers.indexOf(today) > -1 ? headers.indexOf(today) : headers.indexOf(String(today));
+                            
+                            if (dateColumnIndex !== -1) {
+                                const rekapRowIndex = rekapGuru.findIndex(row => String(row[0]) === String(id));
+                                if (rekapRowIndex > 0) {
+                                    rekapGuru[rekapRowIndex][dateColumnIndex] = status.charAt(0).toUpperCase();
                                 }
-                           }
+                            }
+                            
+                            if(!document.getElementById('beranda-page').classList.contains('hidden')) {
+                                renderChartsForPage('beranda');
+                            }
+                        } else {
+                            muatAbsensiGuru();
                         }
                     }
                 });
                 
                 // Laporan Page Listeners
                 const reportTabs = [
-                    { btn: 'laporan-harian-siswa-tab', content: 'laporan-harian-siswa-content'},
-                    { btn: 'laporan-harian-guru-tab', content: 'laporan-harian-guru-content'},
-                    { btn: 'laporan-bulanan-siswa-tab', content: 'laporan-bulanan-siswa-content'},
-                    { btn: 'laporan-bulanan-guru-tab', content: 'laporan-bulanan-guru-content'},
+                    { btn: 'laporan-siswa-tab', content: 'laporan-siswa-content'},
+                    { btn: 'laporan-guru-tab', content: 'laporan-guru-content'},
                 ];
 
                 reportTabs.forEach(tabInfo => {
                     const tabButton = document.getElementById(tabInfo.btn);
                     if (tabButton) {
                         tabButton.addEventListener('click', () => {
-                            reportTabs.forEach(t => document.getElementById(t.content).classList.add('hidden'));
+                            reportTabs.forEach(t => {
+                                const content = document.getElementById(t.content);
+                                if(content) content.classList.add('hidden');
+                            });
                             reportTabs.forEach(t => {
                                 const btn = document.getElementById(t.btn);
                                 if (btn) {
@@ -1537,7 +1785,8 @@
                                     btn.classList.add('border-transparent', 'text-gray-500');
                                 }
                             });
-                            document.getElementById(tabInfo.content).classList.remove('hidden');
+                            const activeContent = document.getElementById(tabInfo.content);
+                            if(activeContent) activeContent.classList.remove('hidden');
                             tabButton.classList.add('border-blue-500', 'text-blue-600');
                             tabButton.classList.remove('border-transparent', 'text-gray-500');
                         });
@@ -1603,15 +1852,16 @@
                     const nama = document.getElementById('guru-nama').value;
                     const jabatan = document.getElementById('guru-jabatan').value;
 
-                    if (id) {
-                        const guru = dataGuru.find(g => g.id == id);
-                        Object.assign(guru, { nama, jabatan });
-                        guruPendingChanges.push({ action: 'editGuru', data: { id, nama, jabatan } });
+                    const change = id 
+                        ? { action: 'editGuru', data: { id, nama, jabatan } }
+                        : { action: 'addGuru', data: { id: Date.now(), nama, jabatan } };
+                    
+                    guruPendingChanges.push(change);
+                    // Optimistic UI update
+                    if(id) {
+                         Object.assign(dataGuru.find(g => g.id == id), { nama, jabatan });
                     } else {
-                        const newId = Date.now();
-                        const newGuru = { id: newId, nama, jabatan };
-                        dataGuru.push(newGuru);
-                        guruPendingChanges.push({ action: 'addGuru', data: newGuru });
+                        dataGuru.push(change.data);
                     }
                     refreshUI();
                     tampilHalaman('guru');
@@ -1619,8 +1869,11 @@
                 });
 
                 document.getElementById('tabel-guru').addEventListener('click', (e) => {
-                    if (e.target.closest('.edit-guru')) {
-                        const id = e.target.closest('.edit-guru').dataset.id;
+                    const editBtn = e.target.closest('.edit-guru');
+                    const deleteBtn = e.target.closest('.hapus-guru');
+                    
+                    if (editBtn) {
+                        const id = editBtn.dataset.id;
                         const guru = dataGuru.find(g => g.id == id);
                         if (guru) {
                             document.getElementById('guru-id').value = guru.id;
@@ -1631,8 +1884,9 @@
                             tampilHalaman('tambah-guru');
                         }
                     }
-                    if (e.target.closest('.hapus-guru')) {
-                        const id = e.target.closest('.hapus-guru').dataset.id;
+
+                    if (deleteBtn) {
+                        const id = deleteBtn.dataset.id;
                         deleteCallback = () => {
                             guruPendingChanges.push({ action: 'deleteGuru', id });
                             dataGuru = dataGuru.filter(g => g.id != id);
@@ -1640,6 +1894,8 @@
                             hideModal(confirmModal);
                             updateSaveButtonsUI();
                         };
+                        document.getElementById('confirm-title').textContent = 'Hapus Data';
+                        document.getElementById('confirm-message').textContent = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.';
                         showModal(confirmModal);
                     }
                 });
@@ -1651,6 +1907,18 @@
                         guruPendingChanges = [];
                         updateSaveButtonsUI();
                         alert('Perubahan data guru berhasil disimpan!');
+                        await fetchDataAndUpdate(true);
+                    }
+                });
+                
+                document.getElementById('simpan-perubahan-siswa').addEventListener('click', async () => {
+                    if (siswaPendingChanges.length === 0) return;
+                    const success = await postData({ action: 'processBulkDataChanges', changes: siswaPendingChanges });
+                    if (success) {
+                        siswaPendingChanges = [];
+                        updateSaveButtonsUI();
+                        alert('Perubahan data siswa berhasil disimpan!');
+                        await fetchDataAndUpdate(true);
                     }
                 });
 
@@ -1673,19 +1941,22 @@
                     const nama = document.getElementById('siswa-nama').value;
                     const kelas = document.getElementById('siswa-kelas').value;
                     
-                    if (nisEdit) {
-                        const siswa = dataSiswa.find(s => s.nis === nisEdit);
-                        Object.assign(siswa, { nisn, nama, kelas });
-                        siswaPendingChanges.push({ action: 'editSiswa', data: { nis, nisn, nama, kelas } });
+                    const data = { nis, nisn, nama, kelas };
+                    const change = nisEdit
+                        ? { action: 'editSiswa', data }
+                        : { action: 'addSiswa', data };
 
+                    if (!nisEdit && dataSiswa.some(s => s.nis === nis)) {
+                        alert('NIS sudah ada. Silakan gunakan NIS yang lain.');
+                        return;
+                    }
+                    
+                    siswaPendingChanges.push(change);
+                    // Optimistic UI update
+                     if(nisEdit) {
+                         Object.assign(dataSiswa.find(s => s.nis === nisEdit), data);
                     } else {
-                        if (dataSiswa.some(s => s.nis === nis)) {
-                            alert('NIS sudah ada. Silakan gunakan NIS yang lain.');
-                            return;
-                        }
-                        const newSiswa = { nis, nisn, nama, kelas };
-                        dataSiswa.push(newSiswa);
-                        siswaPendingChanges.push({ action: 'addSiswa', data: newSiswa });
+                        dataSiswa.push(data);
                     }
                     refreshUI();
                     tampilHalaman('data-siswa');
@@ -1693,8 +1964,10 @@
                 });
                 
                 document.getElementById('tabel-data-siswa').addEventListener('click', (e) => {
-                    if (e.target.closest('.edit-siswa')) {
-                        const nis = e.target.closest('.edit-siswa').dataset.nis;
+                    const editBtn = e.target.closest('.edit-siswa');
+                    const deleteBtn = e.target.closest('.hapus-siswa');
+                    if (editBtn) {
+                        const nis = editBtn.dataset.nis;
                         const siswa = dataSiswa.find(s => s.nis === nis);
                         if (siswa) {
                             document.getElementById('siswa-nis-edit').value = siswa.nis;
@@ -1707,29 +1980,76 @@
                             tampilHalaman('tambah-siswa');
                         }
                     }
-                    if (e.target.closest('.hapus-siswa')) {
-                        const nis = e.target.closest('.hapus-siswa').dataset.nis;
+                    if (deleteBtn) {
+                        const nis = deleteBtn.dataset.nis;
                         deleteCallback = () => {
-                           siswaPendingChanges.push({ action: 'deleteSiswa', nis });
-                           dataSiswa = dataSiswa.filter(s => s.nis !== nis);
-                           refreshUI();
-                           hideModal(confirmModal);
-                           updateSaveButtonsUI();
+                            siswaPendingChanges.push({ action: 'deleteSiswa', nis });
+                            dataSiswa = dataSiswa.filter(s => s.nis != nis);
+                            refreshUI();
+                            hideModal(confirmModal);
+                            updateSaveButtonsUI();
                         };
+                        document.getElementById('confirm-title').textContent = 'Hapus Data Siswa';
+                        document.getElementById('confirm-message').textContent = 'Apakah Anda yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.';
                         showModal(confirmModal);
                     }
                 });
+            
+                // Event listener for holiday settings
+                document.getElementById('holiday-calendar-table').addEventListener('change', (e) => {
+                    if (e.target.classList.contains('holiday-checkbox')) {
+                        const day = e.target.dataset.day;
+                        const checkbox = e.target;
+                        const isHolidayChecked = checkbox.checked;
+                        const now = new Date();
+                        const dateString = `${now.getFullYear()}-${now.getMonth() + 1}-${day}`;
 
-                document.getElementById('simpan-perubahan-siswa').addEventListener('click', async () => {
-                    if (siswaPendingChanges.length === 0) return;
-                    const success = await postData({ action: 'processBulkDataChanges', changes: siswaPendingChanges });
-                    if (success) {
-                        siswaPendingChanges = [];
-                        updateSaveButtonsUI();
-                        alert('Perubahan data siswa berhasil disimpan!');
+                        // --- Optimistic UI Update ---
+                        // Perbarui status libur di aplikasi secara langsung agar terasa instan
+                        if (isHolidayChecked) {
+                            manualHolidays.add(dateString);
+                        } else {
+                            manualHolidays.delete(dateString);
+                        }
+                        // Perbarui menu yang mungkin terpengaruh oleh status hari libur
+                        updateUIForRole();
+
+                        // --- Asynchronous Backend Update (tanpa loading spinner) ---
+                        postData({
+                            action: 'setHoliday',
+                            date: dateString,
+                            isHoliday: isHolidayChecked
+                        }, false).then(success => { // Kirim 'false' untuk mencegah loading spinner
+                            if (success) {
+                                // Data berhasil disimpan. Lakukan sinkronisasi data di latar belakang.
+                                fetchDataAndUpdate(false);
+                            } else {
+                                // Jika postData gagal, notifikasi sudah ditampilkan.
+                                // Kembalikan perubahan pada UI.
+                                checkbox.checked = !isHolidayChecked;
+                                if (!isHolidayChecked) {
+                                    manualHolidays.add(dateString);
+                                } else {
+                                    manualHolidays.delete(dateString);
+                                }
+                                updateUIForRole();
+                            }
+                        });
                     }
                 });
 
+                document.getElementById('upload-guru-excel').addEventListener('click', () => document.getElementById('guru-file-input').click());
+                document.getElementById('guru-file-input').addEventListener('change', (e) => handleFileUpload(e, 'guru'));
+                document.getElementById('upload-siswa-excel').addEventListener('click', () => document.getElementById('siswa-file-input').click());
+                document.getElementById('siswa-file-input').addEventListener('change', (e) => handleFileUpload(e, 'siswa'));
+
+                // Modal listeners
+                document.getElementById('confirm-cancel').addEventListener('click', () => hideModal(confirmModal));
+                document.getElementById('confirm-delete').addEventListener('click', () => {
+                    if (deleteCallback) deleteCallback();
+                });
+                
+                // Bulk delete listeners
                 document.getElementById('select-all-siswa').addEventListener('change', (e) => {
                     document.querySelectorAll('.siswa-checkbox').forEach(cb => {
                         cb.checked = e.target.checked;
@@ -1742,50 +2062,40 @@
                         updateBulkActionUI();
                     }
                 });
-                
-                document.getElementById('hapus-terpilih-btn').addEventListener('click', () => {
-                    const selectedNis = [...document.querySelectorAll('.siswa-checkbox:checked')].map(cb => cb.dataset.nis);
-                    if (selectedNis.length === 0) return;
-                    
-                    deleteCallback = async () => {
-                        const success = await postData({ action: 'deleteBulkSiswa', nisList: selectedNis });
-                        if (success) {
-                            dataSiswa = dataSiswa.filter(s => !selectedNis.includes(s.nis));
-                            refreshUI();
-                            hideModal(confirmModal);
-                            updateBulkActionUI();
-                        }
-                    };
 
-                    document.getElementById('confirm-title').textContent = 'Hapus Siswa Terpilih';
-                    document.getElementById('confirm-message').textContent = `Anda yakin ingin menghapus ${selectedNis.length} siswa terpilih?`;
+                document.getElementById('hapus-terpilih-btn').addEventListener('click', () => {
+                    const selectedCheckboxes = document.querySelectorAll('.siswa-checkbox:checked');
+                    if (selectedCheckboxes.length === 0) return;
+
+                    deleteCallback = () => {
+                        selectedCheckboxes.forEach(cb => {
+                            const nis = cb.dataset.nis;
+                            siswaPendingChanges.push({ action: 'deleteSiswa', nis });
+                        });
+                        const selectedNis = Array.from(selectedCheckboxes).map(cb => cb.dataset.nis);
+                        dataSiswa = dataSiswa.filter(s => !selectedNis.includes(s.nis));
+
+                        refreshUI();
+                        hideModal(confirmModal);
+                        updateSaveButtonsUI();
+                    };
+                    document.getElementById('confirm-title').textContent = `Hapus ${selectedCheckboxes.length} Data Siswa`;
+                    document.getElementById('confirm-message').textContent = 'Apakah Anda yakin ingin menghapus semua data yang dipilih?';
                     showModal(confirmModal);
                 });
-                
-                // Confirm Modal Listeners
-                document.getElementById('confirm-cancel').addEventListener('click', () => hideModal(confirmModal));
-                document.getElementById('confirm-delete').addEventListener('click', () => {
-                    if (deleteCallback) deleteCallback();
-                });
-                
-                // Excel Upload Listeners
-                document.getElementById('upload-guru-excel').addEventListener('click', () => document.getElementById('guru-file-input').click());
-                document.getElementById('guru-file-input').addEventListener('change', (e) => handleFileUpload(e, 'guru'));
-                
-                document.getElementById('upload-siswa-excel').addEventListener('click', () => document.getElementById('siswa-file-input').click());
-                document.getElementById('siswa-file-input').addEventListener('change', (e) => handleFileUpload(e, 'siswa'));
             }
 
             function updateSaveButtonsUI() {
                 const saveGuruBtn = document.getElementById('simpan-perubahan-guru');
                 const saveSiswaBtn = document.getElementById('simpan-perubahan-siswa');
+                if (!saveGuruBtn || !saveSiswaBtn) return;
 
                 if (currentUserRole === 'Administrator') {
                     saveGuruBtn.style.display = guruPendingChanges.length > 0 ? 'flex' : 'none';
                     saveSiswaBtn.style.display = siswaPendingChanges.length > 0 ? 'flex' : 'none';
                 } else {
-                    if (saveGuruBtn) saveGuruBtn.style.display = 'none';
-                    if (saveSiswaBtn) saveSiswaBtn.style.display = 'none';
+                    saveGuruBtn.style.display = 'none';
+                    saveSiswaBtn.style.display = 'none';
                 }
             }
 
@@ -1793,6 +2103,15 @@
             function updateAdminUI() {
                 const isAdmin = currentUserRole === 'Administrator';
                 
+                // Tampilkan/sembunyikan kontainer pengaturan hari libur
+                const holidayContainer = document.getElementById('holiday-settings-container');
+                if (holidayContainer) {
+                    holidayContainer.style.display = isAdmin ? 'block' : 'none';
+                    if (isAdmin) {
+                        generateHolidayCalendar(); // Generate kalender jika admin
+                    }
+                }
+
                 const adminButtons = [
                     'tambah-guru-manual',
                     'upload-guru-excel',
@@ -1833,6 +2152,57 @@
                 }
             }
 
+            // --- Fungsi Tambahan untuk Kalender Libur ---
+            function generateHolidayCalendar() {
+                const table = document.getElementById('holiday-calendar-table');
+                if (!table) return;
+
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                let headerHtml = '<thead><tr class="bg-gray-100"><th class="p-2 border">Tanggal</th>';
+                let bodyHtml = '<tbody><tr><td class="p-2 border font-semibold">Libur</td>';
+
+                const holidayStatus = new Set();
+                if (rekapSiswa.length > 1) {
+                    const headers = rekapSiswa[0];
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dateColumnIndex = headers.indexOf(day) > -1 ? headers.indexOf(day) : headers.indexOf(String(day));
+                        if (dateColumnIndex > -1) {
+                            const isDayOffForAll = rekapSiswa.slice(1).every(row => row[dateColumnIndex] === '-');
+                            if (isDayOffForAll) {
+                                holidayStatus.add(day);
+                            }
+                        }
+                    }
+                }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const date = new Date(year, month, i);
+                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    const isCheckedBySystem = isHoliday(date);
+                    const isCheckedManually = holidayStatus.has(i);
+
+                    headerHtml += `<th class="p-2 border font-normal ${isWeekend ? 'bg-red-100' : ''}">${i}</th>`;
+                    bodyHtml += `
+                        <td class="p-2 border ${isWeekend ? 'bg-red-50' : ''}">
+                            <input type="checkbox" class="holiday-checkbox h-5 w-5 rounded border-gray-400 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                                   data-day="${i}" 
+                                   ${isCheckedBySystem || isCheckedManually ? 'checked' : ''}
+                                   ${isWeekend ? 'disabled' : ''}
+                                   title="${isWeekend ? 'Akhir Pekan' : 'Setel sebagai hari libur'}">
+                        </td>
+                    `;
+                }
+
+                headerHtml += '</tr></thead>';
+                bodyHtml += '</tr></tbody>';
+
+                table.innerHTML = headerHtml + bodyHtml;
+            }
+
 
             // --- FUNGSI-FUNGSI GRAFIK (Menggunakan Google Charts) ---
              function createAbsenceTable(sakit, izin, alpha) {
@@ -1866,10 +2236,27 @@
 
             function updateDashboardCards() {
                 document.getElementById('total-siswa').textContent = dataSiswa.length;
-                const hadir = dataSiswa.filter(s => s.status === 'Hadir').length;
-                const izin = dataSiswa.filter(s => s.status === 'Izin').length;
-                const sakit = dataSiswa.filter(s => s.status === 'Sakit').length;
-                const alpha = dataSiswa.filter(s => s.status === 'Alpha').length;
+                
+                let hadir = 0, izin = 0, sakit = 0, alpha = 0;
+
+                if (rekapSiswa && rekapSiswa.length > 1) {
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    const headers = rekapSiswa[0];
+                    const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+                    
+                    if (dateColumnIndex !== -1) {
+                        for (let i = 1; i < rekapSiswa.length; i++) {
+                            const row = rekapSiswa[i];
+                            const status = String(row[dateColumnIndex] || '').toUpperCase();
+                            
+                            if (status.startsWith('H')) hadir++;
+                            else if (status.startsWith('I')) izin++;
+                            else if (status.startsWith('S')) sakit++;
+                            else if (status.startsWith('A')) alpha++;
+                        }
+                    }
+                }
 
                 document.getElementById('total-hadir').textContent = hadir;
                 document.getElementById('total-izin').textContent = izin;
@@ -1910,10 +2297,30 @@
 
                 allClasses.forEach(kelas => {
                     const siswaDiKelas = dataSiswa.filter(s => s.kelas === kelas);
-                    const hadir = siswaDiKelas.filter(s => s.status === 'Hadir').length;
-                    const sakit = siswaDiKelas.filter(s => s.status === 'Sakit').length;
-                    const izin = siswaDiKelas.filter(s => s.status === 'Izin').length;
-                    const alpha = siswaDiKelas.filter(s => s.status === 'Alpha').length;
+                    let hadir = 0, sakit = 0, izin = 0, alpha = 0;
+
+                    if (rekapSiswa && rekapSiswa.length > 1) {
+                        const today = new Date();
+                        const currentDay = today.getDate();
+                        const headers = rekapSiswa[0];
+                        const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+                        const nisColumnIndex = headers.indexOf('NIS');
+
+                        if (dateColumnIndex !== -1 && nisColumnIndex !== -1) {
+                            const nisInKelas = new Set(siswaDiKelas.map(s => String(s.nis)));
+                            for (let i = 1; i < rekapSiswa.length; i++) {
+                                const row = rekapSiswa[i];
+                                if (nisInKelas.has(String(row[nisColumnIndex]))) {
+                                    const status = String(row[dateColumnIndex] || '').toUpperCase();
+                                    if (status.startsWith('H')) hadir++;
+                                    else if (status.startsWith('S')) sakit++;
+                                    else if (status.startsWith('I')) izin++;
+                                    else if (status.startsWith('A')) alpha++;
+                                }
+                            }
+                        }
+                    }
+                    
                     const total = hadir + sakit + izin + alpha;
                     
                     const data = google.visualization.arrayToDataTable([
@@ -1970,89 +2377,139 @@
                     container.innerHTML = '<p class="text-gray-500 md:col-span-2 xl:col-span-3 text-center">Belum ada data siswa untuk ditampilkan.</p>';
                     return;
                 }
+
+                const headers = (rekapSiswa && rekapSiswa.length > 0) ? rekapSiswa[0] : [];
+                const nisColumnIndex = headers.indexOf('NIS');
+                const hSummaryIndex = headers.indexOf('Jumlah H');
+                const sSummaryIndex = headers.indexOf('Jumlah S');
+                const iSummaryIndex = headers.indexOf('Jumlah I');
+                const aSummaryIndex = headers.indexOf('Jumlah A');
+                
+                // Perbaikan: Lakukan validasi berdasarkan kolom 'NIS' yang esensial untuk mencocokkan data.
+                if (nisColumnIndex === -1) {
+                    container.innerHTML = '<p class="text-gray-500 md:col-span-2 xl:col-span-3 text-center">Format data rekap bulanan tidak valid (Kolom "NIS" tidak ditemukan).</p>';
+                    return;
+                }
+
+                // Buat Map untuk pencarian data rekap yang efisien berdasarkan NIS
+                const rekapSiswaMap = new Map();
+                if (rekapSiswa.length > 1) {
+                    rekapSiswa.slice(1).forEach(row => {
+                        if(row && row.length > nisColumnIndex) rekapSiswaMap.set(String(row[nisColumnIndex]), row);
+                    });
+                }
                 
                 allClasses.forEach(kelas => {
                     const totalSiswaDiKelas = dataSiswa.filter(s => s.kelas === kelas).length;
                     const chartId = `monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
                     const tableId = `table-monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
 
-                    container.innerHTML += `
+                    let [hadir, sakit, izin, alpha] = [0, 0, 0, 0];
+
+                    // Ambil siswa dari data master, lalu cari data rekap mereka melalui Map
+                    const siswaDiKelas = dataSiswa.filter(s => s.kelas === kelas);
+                    siswaDiKelas.forEach(siswa => {
+                        const rekapRow = rekapSiswaMap.get(String(siswa.nis));
+                        if (rekapRow) {
+                            if (hSummaryIndex > -1 && rekapRow.length > hSummaryIndex) hadir += parseInt(rekapRow[hSummaryIndex]) || 0;
+                            if (sSummaryIndex > -1 && rekapRow.length > sSummaryIndex) sakit += parseInt(rekapRow[sSummaryIndex]) || 0;
+                            if (iSummaryIndex > -1 && rekapRow.length > iSummaryIndex) izin += parseInt(rekapRow[iSummaryIndex]) || 0;
+                            if (aSummaryIndex > -1 && rekapRow.length > aSummaryIndex) alpha += parseInt(rekapRow[aSummaryIndex]) || 0;
+                        }
+                    });
+
+                    const cardHTML = `
                         <div class="bg-white p-6 rounded-xl shadow-md">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-lg font-semibold text-gray-800">Kelas ${kelas}</h3>
-                                <p class="text-sm text-gray-500 font-medium">${totalSiswaDiKelas} Siswa</p>
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">Kelas ${kelas}</h3>
+                                    <p class="text-sm text-gray-500 font-medium">${totalSiswaDiKelas} Siswa</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">Total Hadir Bulan Ini</p>
+                                    <p class="text-2xl font-bold text-green-600">${hadir}</p>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center mt-4">
                                 <div id="${chartId}" style="width: 100%; height: 250px;"></div>
                                 <div id="${tableId}"></div>
                             </div>
                         </div>
                     `;
+                    container.innerHTML += cardHTML;
+
+                    // Defer chart drawing to ensure the element exists in the DOM
+                    setTimeout(() => {
+                        const total = hadir + sakit + izin + alpha;
+                        const data = google.visualization.arrayToDataTable([
+                            ['Status', 'Jumlah', { role: 'style' }, { role: 'annotation' }],
+                            ['Hadir', hadir, '#3B82F6', total > 0 ? `${(hadir/total*100).toFixed(0)}%` : '0%'],
+                            ['Sakit', sakit, '#F87171', total > 0 ? `${(sakit/total*100).toFixed(0)}%` : '0%'],
+                            ['Izin', izin, '#FBBF24', total > 0 ? `${(izin/total*100).toFixed(0)}%` : '0%'],
+                            ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
+                        ]);
+
+                        const isMobile = window.innerWidth < 768;
+                        const options = {
+                            legend: { position: "none" },
+                            backgroundColor: 'transparent',
+                            chartArea: { 
+                                width: isMobile ? '70%' : '85%', 
+                                height: '80%' 
+                            },
+                             hAxis: { 
+                                textStyle: { fontSize: isMobile ? 9 : 11 },
+                                slantedText: isMobile,
+                                slantedTextAngle: 45 
+                            },
+                            vAxis: { 
+                                gridlines: { color: 'transparent' } 
+                            },
+                            annotations: { 
+                                textStyle: { 
+                                    fontSize: isMobile ? 9 : 11, 
+                                    bold: true, 
+                                    color: '#333' 
+                                }, 
+                                alwaysOutside: true 
+                            },
+                        };
+
+                        const chartEl = document.getElementById(chartId);
+                        if (chartEl) {
+                           const chart = new google.visualization.ColumnChart(chartEl);
+                           chart.draw(data, options);
+                        }
+
+                        const tableEl = document.getElementById(tableId);
+                        if (tableEl) {
+                           tableEl.innerHTML = createAbsenceTable(sakit, izin, alpha);
+                        }
+                    }, 0);
                 });
-
-                allClasses.forEach(kelas => {
-                    const totalSiswaDiKelas = dataSiswa.filter(s => s.kelas === kelas).length;
-                    const schoolDaysInMonth = 22;
-                    const totalPossible = totalSiswaDiKelas * schoolDaysInMonth;
-                    const alpha = Math.floor(Math.random() * (totalSiswaDiKelas / 2));
-                    const sakit = Math.floor(Math.random() * totalSiswaDiKelas);
-                    const izin = Math.floor(Math.random() * totalSiswaDiKelas);
-                    const hadir = totalPossible - alpha - sakit - izin;
-                    const total = hadir+sakit+izin+alpha;
-
-                    const data = google.visualization.arrayToDataTable([
-                        ['Status', 'Jumlah', { role: 'style' }, { role: 'annotation' }],
-                        ['Hadir', hadir, '#3B82F6', total > 0 ? `${(hadir/total*100).toFixed(0)}%` : '0%'],
-                        ['Sakit', sakit, '#F87171', total > 0 ? `${(sakit/total*100).toFixed(0)}%` : '0%'],
-                        ['Izin', izin, '#FBBF24', total > 0 ? `${(izin/total*100).toFixed(0)}%` : '0%'],
-                        ['Alpha', alpha, '#9CA3AF', total > 0 ? `${(alpha/total*100).toFixed(0)}%` : '0%']
-                    ]);
-
-                    const isMobile = window.innerWidth < 768;
-                    const options = {
-                        legend: { position: "none" },
-                        backgroundColor: 'transparent',
-                        chartArea: { 
-                            width: isMobile ? '70%' : '85%', 
-                            height: '80%' 
-                        },
-                         hAxis: { 
-                            textStyle: { fontSize: isMobile ? 9 : 11 },
-                            slantedText: isMobile,
-                            slantedTextAngle: 45 
-                        },
-                        vAxis: { 
-                            gridlines: { color: 'transparent' } 
-                        },
-                        annotations: { 
-                            textStyle: { 
-                                fontSize: isMobile ? 9 : 11, 
-                                bold: true, 
-                                color: '#333' 
-                            }, 
-                            alwaysOutside: true 
-                        },
-                    };
-
-                    const chart = new google.visualization.ColumnChart(document.getElementById(`monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`));
-                    chart.draw(data, options);
-
-                     // Render table
-                    const tableId = `table-monthly-chart-kelas-${kelas.replace(/\s+/g, '-')}`;
-                    document.getElementById(tableId).innerHTML = createAbsenceTable(sakit, izin, alpha);
-                });
-            }
-
-            function renderDailyAttendanceChart() {
-                // This function is for the old daily graph on the report page, which is now obsolete.
-                // It can be removed or repurposed if needed. For now, it does nothing.
             }
 
             function renderOverallDailyPieChart() {
-                const hadir = dataSiswa.filter(s => s.status === 'Hadir').length;
-                const sakit = dataSiswa.filter(s => s.status === 'Sakit').length;
-                const izin = dataSiswa.filter(s => s.status === 'Izin').length;
-                const alpha = dataSiswa.filter(s => s.status === 'Alpha').length;
+                let hadir = 0, sakit = 0, izin = 0, alpha = 0;
+                
+                if (rekapSiswa && rekapSiswa.length > 1) {
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    const headers = rekapSiswa[0];
+                    const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+                    
+                    if (dateColumnIndex !== -1) {
+                        for (let i = 1; i < rekapSiswa.length; i++) {
+                            const row = rekapSiswa[i];
+                            const status = String(row[dateColumnIndex] || '').toUpperCase();
+                            
+                            if (status.startsWith('H')) hadir++;
+                            else if (status.startsWith('S')) sakit++;
+                            else if (status.startsWith('I')) izin++;
+                            else if (status.startsWith('A')) alpha++;
+                        }
+                    }
+                }
                 const total = hadir + sakit + izin + alpha;
 
                 const data = google.visualization.arrayToDataTable([
@@ -2094,19 +2551,27 @@
 
             function renderOverallMonthlyPieChart() {
                 let hadir = 0, sakit = 0, izin = 0, alpha = 0;
-        
-                // Skip header row (index 0)
-                for (let i = 1; i < rekapSiswa.length; i++) {
-                    const row = rekapSiswa[i];
-                    for (let j = 3; j < row.length; j++) { // Date columns start at index 3
-                        switch(row[j]) {
-                            case 'H': hadir++; break;
-                            case 'S': sakit++; break;
-                            case 'I': izin++; break;
-                            case 'A': alpha++; break;
+                
+                if (!rekapSiswa || rekapSiswa.length < 2) { /* Handle empty data */ } else {
+                    const headers = rekapSiswa[0];
+                    const summaryHIndex = headers.indexOf('Jumlah H');
+                    const summarySIndex = headers.indexOf('Jumlah S');
+                    const summaryIIndex = headers.indexOf('Jumlah I');
+                    const summaryAIndex = headers.indexOf('Jumlah A');
+                    
+                    if(summaryHIndex > -1){
+                        for (let i = 1; i < rekapSiswa.length; i++) {
+                            const row = rekapSiswa[i];
+                             if (row[0]) { 
+                                hadir += parseInt(row[summaryHIndex]) || 0;
+                                sakit += parseInt(row[summarySIndex]) || 0;
+                                izin += parseInt(row[summaryIIndex]) || 0;
+                                alpha += parseInt(row[summaryAIndex]) || 0;
+                             }
                         }
                     }
                 }
+
                 const total = hadir + sakit + izin + alpha;
 
                 const data = google.visualization.arrayToDataTable([
@@ -2147,10 +2612,26 @@
             }
 
             function renderOverallDailyTeacherPieChart() {
-                const hadir = dataGuru.filter(g => g.status === 'Hadir').length;
-                const sakit = dataGuru.filter(g => g.status === 'Sakit').length;
-                const izin = dataGuru.filter(g => g.status === 'Izin').length;
-                const alpha = dataGuru.filter(g => g.status === 'Alpha').length;
+                let hadir = 0, sakit = 0, izin = 0, alpha = 0;
+                
+                if (rekapGuru && rekapGuru.length > 1) {
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    const headers = rekapGuru[0];
+                    const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+                    
+                    if (dateColumnIndex !== -1) {
+                        for (let i = 1; i < rekapGuru.length; i++) {
+                            const row = rekapGuru[i];
+                            const status = String(row[dateColumnIndex] || '').toUpperCase();
+                            
+                            if (status.startsWith('H')) hadir++;
+                            else if (status.startsWith('S')) sakit++;
+                            else if (status.startsWith('I')) izin++;
+                            else if (status.startsWith('A')) alpha++;
+                        }
+                    }
+                }
                 const total = hadir + sakit + izin + alpha;
                 
                 const data = google.visualization.arrayToDataTable([
@@ -2193,18 +2674,25 @@
             function renderOverallMonthlyTeacherPieChart() {
                 let hadir = 0, sakit = 0, izin = 0, alpha = 0;
                 
-                // Skip header row (index 0)
-                for (let i = 1; i < rekapGuru.length; i++) {
-                    const row = rekapGuru[i];
-                    for (let j = 3; j < row.length; j++) { // Date columns start at index 3
-                        switch(row[j]) {
-                            case 'H': hadir++; break;
-                            case 'S': sakit++; break;
-                            case 'I': izin++; break;
-                            case 'A': alpha++; break;
+                 if (!rekapGuru || rekapGuru.length < 2) { /* Handle empty data */ } else {
+                    const headers = rekapGuru[0];
+                    const summaryHIndex = headers.indexOf('Jumlah H');
+                    const summarySIndex = headers.indexOf('Jumlah S');
+                    const summaryIIndex = headers.indexOf('Jumlah I');
+                    const summaryAIndex = headers.indexOf('Jumlah A');
+                    
+                    if(summaryHIndex > -1){
+                        for (let i = 1; i < rekapGuru.length; i++) {
+                            const row = rekapGuru[i];
+                             if (row[0]) {
+                                hadir += parseInt(row[summaryHIndex]) || 0;
+                                sakit += parseInt(row[summarySIndex]) || 0;
+                                izin += parseInt(row[summaryIIndex]) || 0;
+                                alpha += parseInt(row[summaryAIndex]) || 0;
+                             }
                         }
                     }
-                }
+                 }
                 const total = hadir + sakit + izin + alpha;
 
                 const data = google.visualization.arrayToDataTable([
@@ -2249,8 +2737,38 @@
                 if(!tabelBody) return;
                 tabelBody.innerHTML = '';
 
-                const allSiswa = (kelas === 'all') ? dataSiswa : dataSiswa.filter(s => s.kelas === kelas);
-                const filteredSiswa = allSiswa.filter(s => s.status !== 'Hadir');
+                const filteredSiswa = [];
+                if (rekapSiswa && rekapSiswa.length > 1) {
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    const headers = rekapSiswa[0];
+                    const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+                    
+                    const masterSiswaMap = new Map(dataSiswa.map(s => [String(s.nis), s]));
+                    
+                    if (dateColumnIndex !== -1) {
+                        for (let i = 1; i < rekapSiswa.length; i++) {
+                            const row = rekapSiswa[i];
+                            const status = String(row[dateColumnIndex] || '').toUpperCase();
+                            const nis = String(row[0]);
+                            const siswaInfo = masterSiswaMap.get(nis);
+
+                            if (siswaInfo && (kelas === 'all' || siswaInfo.kelas === kelas)) {
+                                if (status !== 'H' && status !== '-') {
+                                    let statusLengkap = 'Alpha';
+                                    if(status === 'S') statusLengkap = 'Sakit';
+                                    if(status === 'I') statusLengkap = 'Izin';
+                                    
+                                    filteredSiswa.push({
+                                        nama: siswaInfo.nama,
+                                        kelas: siswaInfo.kelas,
+                                        status: statusLengkap
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
 
                 if(filteredSiswa.length === 0){
                     tabelBody.innerHTML = `<tr><td colspan="3" class="text-center p-4 text-gray-500">Tidak ada siswa yang tidak hadir hari ini.</td></tr>`;
@@ -2282,7 +2800,36 @@
                 if(!tabelBody) return;
                 tabelBody.innerHTML = '';
 
-                const filteredGuru = dataGuru.filter(g => g.status !== 'Hadir');
+                const filteredGuru = [];
+                if (rekapGuru && rekapGuru.length > 1) {
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    const headers = rekapGuru[0];
+                    const dateColumnIndex = headers.indexOf(currentDay) > -1 ? headers.indexOf(currentDay) : headers.indexOf(String(currentDay));
+                    
+                    const masterGuruMap = new Map(dataGuru.map(g => [String(g.id), g]));
+
+                    if (dateColumnIndex !== -1) {
+                        for (let i = 1; i < rekapGuru.length; i++) {
+                            const row = rekapGuru[i];
+                            const status = String(row[dateColumnIndex] || '').toUpperCase();
+                            const id = String(row[0]);
+                            const guruInfo = masterGuruMap.get(id);
+
+                            if (guruInfo && status !== 'H' && status !== '-') {
+                                let statusLengkap = 'Alpha';
+                                if(status === 'S') statusLengkap = 'Sakit';
+                                if(status === 'I') statusLengkap = 'Izin';
+                                
+                                filteredGuru.push({
+                                    nama: guruInfo.nama,
+                                    jabatan: guruInfo.jabatan,
+                                    status: statusLengkap
+                                });
+                            }
+                        }
+                    }
+                }
 
                  if(filteredGuru.length === 0){
                     tabelBody.innerHTML = `<tr><td colspan="3" class="text-center p-4 text-gray-500">Tidak ada guru yang tidak hadir hari ini.</td></tr>`;
@@ -2309,206 +2856,98 @@
                 });
             }
             
-            // Fungsi untuk mengecek hari libur (Sabtu, Minggu, dan Libur Nasional 2025)
-            function isHoliday(year, month, day) {
-                const date = new Date(year, month - 1, day);
-                const dayOfWeek = date.getDay();
-
-                // Cek jika Sabtu (6) atau Minggu (0)
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    return true;
-                }
-
-                // Daftar Libur Nasional 2025 (Bulan 1-12, Hari 1-31)
-                const nationalHolidays = [
-                    { month: 1, day: 1 },   // Tahun Baru Masehi
-                    { month: 1, day: 27 },  // Isra Mi'raj
-                    { month: 1, day: 29 },  // Tahun Baru Imlek
-                    { month: 3, day: 29 },  // Hari Suci Nyepi
-                    { month: 3, day: 31 },  // Cuti Bersama Idul Fitri / Hari Raya Idul Fitri
-                    { month: 4, day: 1 },   // Hari Raya Idul Fitri
-                    { month: 4, day: 18 },  // Wafat Isa Almasih
-                    { month: 5, day: 1 },   // Hari Buruh
-                    { month: 5, day: 12 },  // Hari Raya Waisak
-                    { month: 5, day: 29 },  // Kenaikan Isa Almasih
-                    { month: 6, day: 1 },   // Hari Lahir Pancasila
-                    { month: 6, day: 7 },   // Hari Raya Idul Adha
-                    { month: 6, day: 27 },  // Tahun Baru Islam
-                    { month: 8, day: 17 },  // Hari Kemerdekaan RI
-                    { month: 9, day: 5 },   // Maulid Nabi Muhammad SAW
-                    { month: 12, day: 25 }, // Hari Raya Natal
-                ];
-
-                return nationalHolidays.some(holiday => holiday.month === month && holiday.day === day);
-            }
-
             function downloadMonthlyPDF(type) {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'mm',
-                    format: 'a4'
-                });
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
                 const now = new Date();
                 const month = now.toLocaleString('id-ID', { month: 'long' });
                 const year = now.getFullYear();
                 const daysInMonth = new Date(year, now.getMonth() + 1, 0).getDate();
 
+                const dataRekap = (type === 'siswa') ? rekapSiswa : rekapGuru;
+                if (!dataRekap || dataRekap.length < 2) {
+                    alert(`Tidak ada data rekap bulanan untuk ${type}.`);
+                    return;
+                }
+
+                const headers = dataRekap[0];
+                const dateHeaders = headers.slice(headers.findIndex(h => h == 1 || h == '1'), headers.indexOf('Jumlah H'));
+                const summaryHeaders = ['H', 'S', 'I', 'A'];
+
                 if (type === 'siswa') {
                     const allClasses = [...new Set(dataSiswa.map(s => s.kelas))].sort();
-
                     allClasses.forEach((kelas, classIndex) => {
-                        if (classIndex > 0) {
-                            doc.addPage('a4', 'landscape');
-                        }
-
-                        const title = `Laporan Absensi Bulanan Siswa - Kelas ${kelas}`;
+                        if (classIndex > 0) doc.addPage('a4', 'landscape');
+                        
                         doc.setFontSize(14);
-                        doc.text(title, 14, 15);
+                        doc.text(`Laporan Absensi Bulanan Siswa - Kelas ${kelas}`, 14, 15);
                         doc.setFontSize(10);
                         doc.text(`SMP Diponegoro Sampang - Bulan: ${month} ${year}`, 14, 22);
 
-                        const head = [[]];
+                        const head = [['No', 'NIS', 'NISN', 'Nama Siswa', ...dateHeaders, ...summaryHeaders]];
                         const body = [];
-                        const dateHeaders = Array.from({ length: daysInMonth }, (_, i) => String(i + 1));
-                        const summaryHeaders = ['H', 'S', 'I', 'A'];
-
-                        head[0] = ['No', 'NIS', 'NISN', 'Nama Siswa', ...dateHeaders, ...summaryHeaders];
                         
-                        const siswaDiKelas = dataSiswa.filter(s => s.kelas === kelas);
-
-                        siswaDiKelas.forEach((siswa, index) => {
-                            const row = [index + 1, siswa.nis, siswa.nisn, siswa.nama];
-                            let hadirCount = 0, sakitCount = 0, izinCount = 0, alphaCount = 0;
-                            const statuses = ['H', 'S', 'I', 'A'];
-
-                            for (let i = 0; i < daysInMonth; i++) {
-                                const currentDay = i + 1;
-                                if (isHoliday(year, now.getMonth() + 1, currentDay)) {
-                                    row.push('-');
-                                } else {
-                                    // Simulasi data, 85% kemungkinan hadir
-                                    const randomStatus = Math.random() < 0.85 ? 'H' : statuses[Math.floor(Math.random() * statuses.length)];
-                                    row.push(randomStatus);
-                                    if (randomStatus === 'H') hadirCount++;
-                                    else if (randomStatus === 'S') sakitCount++;
-                                    else if (randomStatus === 'I') izinCount++;
-                                    else if (randomStatus === 'A') alphaCount++;
-                                }
-                            }
-                            row.push(hadirCount, sakitCount, izinCount, alphaCount);
-                            body.push(row);
+                        const rekapKelas = dataRekap.slice(1).filter(row => row[3] === kelas);
+                        rekapKelas.forEach((row, index) => {
+                            const newRow = [
+                                index + 1,
+                                row[0], // NIS
+                                row[1], // NISN
+                                row[2], // Nama
+                                ...row.slice(4, 4 + daysInMonth), // Data tanggal
+                                row[4 + daysInMonth],     // H
+                                row[4 + daysInMonth + 1], // S
+                                row[4 + daysInMonth + 2], // I
+                                row[4 + daysInMonth + 3]  // A
+                            ];
+                            body.push(newRow);
                         });
                         
-                        const columnStyles = {};
-                        const dateColWidth = (297 - 28 - 10 - 15 - 45 - (4 * 7)) / daysInMonth; 
-                         head[0].forEach((_, index) => {
-                            const dateHeaderIndexStart = 4;
-                            if (index >= dateHeaderIndexStart && index < head[0].length - 4) {
-                                columnStyles[index] = { cellWidth: dateColWidth > 5 ? dateColWidth : 5, halign: 'center' };
-                            }
-                         });
-
                         doc.autoTable({
-                            startY: 28,
-                            head: head,
-                            body: body,
-                            theme: 'grid',
-                            styles: {
-                                fontSize: 5,
-                                cellPadding: 1,
-                                valign: 'middle',
-                            },
-                            headStyles: {
-                                fillColor: [34, 197, 94],
-                                textColor: 255,
-                                fontStyle: 'bold',
-                                halign: 'center'
-                            },
-                            alternateRowStyles: {
-                                fillColor: [240, 253, 244]
-                            },
-                            columnStyles: columnStyles,
+                            startY: 28, head, body, theme: 'grid',
+                            styles: { fontSize: 5, cellPadding: 1, valign: 'middle' },
+                            headStyles: { fillColor: [34, 197, 94], textColor: 255, fontStyle: 'bold', halign: 'center' },
                         });
                     });
 
                 } else { // type === 'guru'
-                    const title = 'Laporan Absensi Bulanan Guru';
                     doc.setFontSize(14);
-                    doc.text(title, 14, 15);
+                    doc.text('Laporan Absensi Bulanan Guru', 14, 15);
                     doc.setFontSize(10);
                     doc.text(`SMP Diponegoro Sampang - Bulan: ${month} ${year}`, 14, 22);
 
-                    const head = [[]];
+                    const head = [['No', 'Nama Guru', 'Jabatan', ...dateHeaders, ...summaryHeaders]];
                     const body = [];
-                    const dateHeaders = Array.from({ length: daysInMonth }, (_, i) => String(i + 1));
-                    const summaryHeaders = ['H', 'S', 'I', 'A'];
-                    head[0] = ['No', 'ID', 'Nama Guru', 'Jabatan', ...dateHeaders, ...summaryHeaders];
-                    
-                    dataGuru.forEach((guru, index) => {
-                        const row = [index + 1, guru.id, guru.nama, guru.jabatan];
-                        let hadirCount = 0, sakitCount = 0, izinCount = 0, alphaCount = 0;
-                        const statuses = ['H', 'S', 'I', 'A'];
-                        for (let i = 0; i < daysInMonth; i++) {
-                            const currentDay = i + 1;
-                            if (isHoliday(year, now.getMonth() + 1, currentDay)) {
-                                row.push('-');
-                            } else {
-                                const randomStatus = Math.random() < 0.95 ? 'H' : statuses[Math.floor(Math.random() * statuses.length)];
-                                row.push(randomStatus);
-                                if (randomStatus === 'H') hadirCount++;
-                                else if (randomStatus === 'S') sakitCount++;
-                                else if (randomStatus === 'I') izinCount++;
-                                else if (randomStatus === 'A') alphaCount++;
-                            }
-                        }
-                        row.push(hadirCount, sakitCount, izinCount, alphaCount);
-                        body.push(row);
-                    });
-                
-                    const columnStyles = {};
-                    const baseColWidth = 35;
-                    const dateColWidth = (297 - 28 - 10 - 15 - baseColWidth - (4 * 7)) / daysInMonth; 
-                     head[0].forEach((_, index) => {
-                        const dateHeaderIndexStart = 4;
-                        if (index >= dateHeaderIndexStart && index < head[0].length - 4) {
-                            columnStyles[index] = { cellWidth: dateColWidth > 5 ? dateColWidth : 5, halign: 'center' };
-                        }
-                     });
+                    const masterGuruMap = new Map(dataGuru.map(g => [String(g.id), g]));
 
+                    dataRekap.slice(1).forEach((row, index) => {
+                        const guruInfo = masterGuruMap.get(String(row[0]));
+                        const newRow = [
+                            index + 1,
+                            row[1], // Nama
+                            guruInfo ? guruInfo.jabatan : '', // Jabatan
+                            ...row.slice(2, 2 + daysInMonth), // Data tanggal
+                            row[2 + daysInMonth],     // H
+                            row[2 + daysInMonth + 1], // S
+                            row[2 + daysInMonth + 2], // I
+                            row[2 + daysInMonth + 3]  // A
+                        ];
+                        body.push(newRow);
+                    });
+                    
                     doc.autoTable({
-                        startY: 28,
-                        head: head,
-                        body: body,
-                        theme: 'grid',
-                        styles: {
-                            fontSize: 5,
-                            cellPadding: 1,
-                            valign: 'middle',
-                        },
-                        headStyles: {
-                            fillColor: [34, 197, 94],
-                            textColor: 255,
-                            fontStyle: 'bold',
-                            halign: 'center'
-                        },
-                        alternateRowStyles: {
-                            fillColor: [240, 253, 244]
-                        },
-                        columnStyles: columnStyles,
+                        startY: 28, head, body, theme: 'grid',
+                        styles: { fontSize: 6, cellPadding: 1, valign: 'middle' },
+                        headStyles: { fillColor: [34, 197, 94], textColor: 255, fontStyle: 'bold', halign: 'center' },
                     });
                 }
                 
-                // Add signature on the last page of the document
                 const finalY = doc.lastAutoTable.finalY;
-                const pageHeight = doc.internal.pageSize.getHeight();
                 let signatureY = finalY + 10;
-
-                // Check if there is enough space on the current page for the signature
-                if (signatureY > pageHeight - 25) {
+                if (signatureY > doc.internal.pageSize.getHeight() - 25) {
                     doc.addPage('a4', 'landscape');
-                    signatureY = 20; // Reset Y position on the new page
+                    signatureY = 20;
                 }
                 
                 const kepalaSekolah = dataGuru.find(g => g.jabatan === 'Kepala Sekolah');
@@ -2520,8 +2959,7 @@
                 doc.text(namaKepsek, 240, signatureY + 25);
                 doc.line(240, signatureY + 26, 280, signatureY + 26);
 
-                const fileName = `laporan-${type}-bulanan-${month}-${year}.pdf`;
-                doc.save(fileName);
+                doc.save(`laporan-${type}-bulanan-${month}-${year}.pdf`);
             }
             
             // Resize charts on window resize
@@ -2539,4 +2977,3 @@
     </script>
 </body>
 </html>
-
